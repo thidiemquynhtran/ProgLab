@@ -10,6 +10,7 @@ class Customer(models.Model):
     class Meta:
         managed = True
         db_table = 'customers'
+        
 
 class Product(models.Model):
     sku = models.CharField(db_column='SKU', primary_key=True, max_length=5)  # Field name made lowercase.
@@ -18,14 +19,14 @@ class Product(models.Model):
     category = models.CharField(db_column='Category', max_length=10, blank=True, null=True)  # Field name made lowercase.
     size = models.CharField(db_column='Size', max_length=11, blank=True, null=True)  # Field name made lowercase.
     ingredients = models.CharField(db_column='Ingredients', max_length=65, blank=True, null=True)  # Field name made lowercase.
-    launch = models.CharField(db_column='Launch', max_length=11, blank=True, null=True)  # Field name made lowercase.
+    launch = models.CharField(db_column='Launch', max_length=11, blank=True, null=True) # Field name made lowercase.
+
 
     class Meta:
         managed = True
         db_table = 'products'
     def __str__(self):
         return self.name
-
 
 class Store(models.Model):
     storeid = models.CharField(db_column='storeID', primary_key=True, max_length=7)  # Field name made lowercase.

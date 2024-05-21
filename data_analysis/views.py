@@ -1,5 +1,6 @@
 # data_analysis/views.py
 
+<<<<<<< HEAD
 # Create your views here.
 # request -> response
 # request handler
@@ -29,3 +30,15 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     serializer_class = OrderItemSerializer
 
 
+=======
+from django.shortcuts import render
+from .utils import calculate_total_customers, calculate_average_sales_revenue
+
+def dashboard(request):
+    total_customers = calculate_total_customers()
+    average_sales_revenue = calculate_average_sales_revenue()
+    return render(request, 'dashboard.html', {
+        'total_customers': total_customers,
+        'average_sales_revenue': average_sales_revenue,
+    })
+>>>>>>> 442475b5a08f63a4be1ad45c01b3c5d1bdef9141
