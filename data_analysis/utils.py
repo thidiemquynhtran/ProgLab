@@ -56,7 +56,7 @@ def get_total_sales_by_product_with_filters(product=None):
 
     #___________pie chart Data
      
-    def get_pizza_category_distribution(state=None, year=None):
+def get_pizza_category_distribution(state=None, year=None):
     queryset = OrderItem.objects.all()
 
     if state:
