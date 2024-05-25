@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'customers',
-                'managed': False,
+                'managed': True,
             },
         ),
         migrations.CreateModel(
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'products',
-                'managed': False,
+                'managed': True,
             },
         ),
         migrations.CreateModel(
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'stores',
-                'managed': False,
+                'managed': True,
             },
         ),
         migrations.CreateModel(
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'orders',
-                'managed': False,
+                'managed': True,
             },
         ),
         migrations.CreateModel(
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'orderItems',
-                'managed': False,
+                'managed': True,
             },
         ),
     ]
