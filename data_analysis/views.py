@@ -1,5 +1,5 @@
 # data_analysis/views.py
-
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .utils import (
@@ -11,6 +11,10 @@ from .utils import (
     get_pizza_category_distribution,
     get_total_sales_by_state
 )
+
+def index_view(request):
+    return render(request, 'index.html')
+
 
 @api_view(['GET'])
 def total_customers_view(request):

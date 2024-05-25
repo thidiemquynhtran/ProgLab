@@ -12,5 +12,7 @@ urlpatterns = [
     path('total-sales-by-product/', views.total_sales_by_product_view, name='total_sales_by_product'),
     path('pizza-category-distribution/', views.pizza_category_distribution_view, name='pizza_category_distribution'),
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
+    path('', views.index_view, name='index'),
+     path('data_analysis/index.html', views.index_view, name='index'),
 ]
 # path('dashboard/', views.dashboard, name='dashboard'), 

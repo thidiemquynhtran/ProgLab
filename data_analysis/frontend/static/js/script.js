@@ -1,79 +1,173 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Example data for key metrics
-    const totalSales = 12;
-    const totalOrders = 678;
+$(document).ready(function () {
+  var barChart, pieChart;
+  var selectedCategory = null;
 
-    // Set key metrics
-    document.getElementById('totalSales').textContent = `$${totalSales.toLocaleString()}`;
-    document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
+  var data = [
+    { month: "January", category: "Pepperoni", sales: 100, year: 2023 },
+    { month: "January", category: "Margarita", sales: 120, year: 2023 },
+    { month: "January", category: "Hawaiian", sales: 80, year: 2023 },
+    { month: "January", category: "Meat Lover", sales: 150, year: 2023 },
+    { month: "January", category: "Veggie", sales: 90, year: 2023 },
+    { month: "January", category: "BBQ Chicken", sales: 110, year: 2023 },
+    { month: "January", category: "Buffalo Chicken", sales: 70, year: 2023 },
+    { month: "January", category: "Sicillian", sales: 130, year: 2023 },
+    { month: "January", category: "Oxtail", sales: 140, year: 2023 },
+    { month: "February", category: "Pepperoni", sales: 110, year: 2023 },
+    { month: "February", category: "Margarita", sales: 130, year: 2023 },
+    { month: "February", category: "Hawaiian", sales: 90, year: 2023 },
+    { month: "February", category: "Meat Lover", sales: 160, year: 2023 },
+    { month: "February", category: "Veggie", sales: 100, year: 2023 },
+    { month: "February", category: "BBQ Chicken", sales: 120, year: 2023 },
+    { month: "February", category: "Buffalo Chicken", sales: 80, year: 2023 },
+    { month: "February", category: "Sicillian", sales: 140, year: 2023 },
+    { month: "February", category: "Oxtail", sales: 150, year: 2023 },
+    // Add more data as needed
+  ];
 
-    // Bar chart
-    const ctxBar = document.getElementById('barChart').getContext('2d');
-    new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-            datasets: [{
-                label: 'Monthly Sales',
-                data: [1200, 1900, 3000, 5000, 2000, 3000],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
+  function getFilteredData(year) {
+    return data.filter((item) => item.year === year);
+  }
+
+  function createBarChart(filteredData) {
+    //get all unique months
+    var months = [...new Set(filteredData.map((item) => item.month))];
+
+    var totalSalesData = months.map((month) => {
+      return filteredData
+        .filter((item) => item.month === month)
+        .reduce((sum, item) => sum + item.sales, 0);
+    });
+
+    var categorySalesData = months.map((month) => {
+      if (selectedCategory) {
+        var entry = filteredData.find(
+          (item) => item.month === month && item.category === selectedCategory
+        );
+        return entry ? entry.sales : 0;
+      } else {
+        return 0;
+      }
+    });
+
+    var datasets = [
+      {
+        label: "Total Sales",
+        data: totalSalesData,
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+      },
+    ];
+
+    if (selectedCategory) {
+      datasets.push({
+        label: selectedCategory + " Sales",
+        data: categorySalesData,
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      });
+    }
+
+    var ctx = document.getElementById("barChart").getContext("2d");
+    if (barChart) {
+      barChart.destroy();
+    }
+    barChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: datasets,
+      },
+      options: {
+        onClick: function (evt) {
+          var activePoints = barChart.getElementsAtEventForMode(
+            evt,
+            "nearest",
+            { intersect: true },
+            false
+          );
+          if (activePoints.length) {
+            var month = barChart.data.labels[activePoints[0].index];
+            updatePieChart(month);
+          }
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+      },
+    });
+  }
+
+  function createPieChart(filteredData) {
+    var categories = [...new Set(filteredData.map((item) => item.category))];
+    var totalSales = filteredData.reduce((sum, item) => sum + item.sales, 0);
+
+    var data = categories.map((category) => {
+      var categorySales = filteredData
+        .filter((item) => item.category === category)
+        .reduce((sum, item) => sum + item.sales, 0);
+      return (categorySales / totalSales) * 100;
     });
 
-    // Pie chart
-    const ctxPie = document.getElementById('pieChart').getContext('2d');
-    new Chart(ctxPie, {
-        type: 'pie',
-        data: {
-            labels: ['Pepperoni', 'Margarita', 'Hawaiian'],
-            datasets: [{
-                label: 'Pizza Popularity',
-                data: [55, 25, 20],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)'
-                ],
-                borderWidth: 1
-            }]
-        }
-    });
-
-    // Line chart
-    const ctxLine = document.getElementById('lineChart').getContext('2d');
-    new Chart(ctxLine, {
-        type: 'line',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-            datasets: [{
-                label: 'Monthly Orders',
-                data: [50, 100, 150, 200, 250, 300],
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
-            }]
+    var ctx = document.getElementById("pieChart").getContext("2d");
+    if (pieChart) {
+      pieChart.destroy();
+    }
+    pieChart = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: categories,
+        datasets: [
+          {
+            data: data,
+            backgroundColor: categories.map(() => getRandomColor()),
+          },
+        ],
+      },
+      options: {
+        onClick: function (evt) {
+          var activePoints = pieChart.getElementsAtEventForMode(
+            evt,
+            "nearest",
+            { intersect: true },
+            false
+          );
+          if (activePoints.length) {
+            selectedCategory = pieChart.data.labels[activePoints[0].index];
+            updateBarChart();
+          }
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+      },
     });
+  }
+
+  function updatePieChart(month) {
+    var year = parseInt($("#yearFilter").val());
+    var filteredData = getFilteredData(year).filter(
+      (item) => item.month === month
+    );
+    createPieChart(filteredData);
+  }
+
+  function updateBarChart() {
+    var year = parseInt($("#yearFilter").val());
+    var filteredData = getFilteredData(year);
+    createBarChart(filteredData);
+  }
+
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  $("#yearFilter").change(function () {
+    selectedCategory = null;
+    var year = parseInt($(this).val());
+    var filteredData = getFilteredData(year);
+    createBarChart(filteredData);
+    createPieChart(filteredData);
+  });
+
+  var initialYear = parseInt($("#yearFilter").val());
+  var initialData = getFilteredData(initialYear);
+  createBarChart(initialData);
+  createPieChart(initialData);
 });
