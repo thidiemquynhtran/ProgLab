@@ -7,12 +7,14 @@ from .models import Customer, Order
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 
+#key metrics 
+
 # alle Kunden
 def calculate_total_customers():
     return Customer.objects.count()
 
-#avarge sales umsatz
-def calculate_average_sales_revenue():
+#avarge order von Kunde
+def calculate_average_order_value():
     total_sales = Order.objects.aggregate(total_sales=Sum('total'))['total_sales']
     total_orders = Order.objects.count()
     return total_sales / total_orders if total_orders > 0 else 0
@@ -57,7 +59,7 @@ def get_total_sales_by_product_with_filters(product=None):
     #___________pie chart Data
      
     def get_pizza_category_distribution(state=None, year=None):
-    queryset = OrderItem.objects.all()
+        queryset = OrderItem.objects.all()
 
     if state:
         queryset = queryset.filter(order__store__state=state)
@@ -89,9 +91,9 @@ def get_total_sales_by_product_with_filters(product=None):
 
 
 def get_total_sales_by_state(state=None):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all() #order objekte aus DB abrufen
 
     if state:
-        queryset = queryset.filter(store__state=state)
+        queryset = queryset.filter(store__state=state) # BS geg BSt filtern
 
-    return queryset.annotate(year=TruncYear('order_date')).values('year').annotate(total_sales=Sum('total')).order_by('year')
+    return queryset.annotate(year=TruncYear('order_date')).values('year').annotate(total_sales=Sum('total')).order_by('year') #Bst nach jahr + SUm Verkauf jahr
