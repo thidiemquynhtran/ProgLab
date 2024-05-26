@@ -7,6 +7,7 @@ from .models import Customer, Order
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 from datetime import datetime
+from django.db.models.functions import ExtractMonth, ExtractYear
 
 #key metrics 
 
@@ -51,12 +52,12 @@ def get_total_sales_by_month_with_filters(year=None):
     if year:
         queryset = queryset.filter(orderdate__year=year)
     
-    # Umsatz pro Monat aggregieren
-    sales_data = queryset.annotate(month=TruncMonth('orderdate')).values('month').annotate(total_sales=Sum('total')).order_by('month')
-
-    # Datum ohne Zeit- und Zeitzoneinformationen umwandeln
-    for entry in sales_data:
-        entry['month'] = entry['month'].date()
+   # Umsatz pro Monat aggregieren
+    sales_data = queryset.annotate(
+        month=ExtractMonth('orderdate')
+    ).values('month').annotate(
+        total_sales=Sum('total')
+    ).order_by('month')
 
     return sales_data
     
