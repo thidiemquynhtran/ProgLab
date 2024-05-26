@@ -48,7 +48,6 @@ def calculate_total_revenue():
 
 #__________________________________Sales Analysis Products, year,size>Balkendigramm
 
-#total sales by year
 def get_total_sales_by_month_with_filters(year=None):
     queryset = Order.objects.all()
     
@@ -58,17 +57,18 @@ def get_total_sales_by_month_with_filters(year=None):
     # Iterieren Sie über das Queryset und extrahieren Sie Datum und Umsatz
     for order in queryset:
         try:
-            order_date = datetime.strptime(order.orderdate, "%Y-%m-%dT%H:%M:%SZ")
+            order_date = datetime.strptime(order.orderdate.split('T')[0], "%Y-%m-%d")
             if year and order_date.year != int(year):
                 continue
+            # Setzen Sie das Datum auf den ersten Tag des Monats
             month_start = order_date.replace(day=1)
-            monthly_sales[month_start] += Decimal(order.total)
+            monthly_sales[month_start] += order.total
         except ValueError:
             continue
 
-    # Formatieren Sie die Daten in das gewünschte Format
+    # Formatieren Sie die Daten in das gewünschte Format ohne Zeitinformationen
     sales_data = [
-        {'month': month, 'total_sales': total}
+        {'month': month.strftime("%Y-%m-%d"), 'total_sales': str(total)}
         for month, total in sorted(monthly_sales.items())
     ]
 
