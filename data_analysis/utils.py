@@ -8,6 +8,8 @@ from .models import Order, OrderItem #from .models import Order, OrderItem, #fü
 from django.db.models import Count #für pie
 from datetime import datetime
 from django.db.models.functions import ExtractMonth, ExtractYear
+from collections import defaultdict
+
 
 #key metrics 
 
@@ -48,16 +50,26 @@ def calculate_total_revenue():
 #total sales by year
 def get_total_sales_by_month_with_filters(year=None):
     queryset = Order.objects.all()
-
-    if year:
-        queryset = queryset.filter(orderdate__year=year)
     
-   # Umsatz pro Monat aggregieren
-    sales_data = queryset.annotate(
-        month=ExtractMonth('orderdate')
-    ).values('month').annotate(
-        total_sales=Sum('total')
-    ).order_by('month')
+    # Initialisieren Sie eine Struktur zum Halten der aggregierten Daten
+    monthly_sales = defaultdict(float)
+
+    # Iterieren Sie über das Queryset und extrahieren Sie Datum und Umsatz
+    for order in queryset:
+        try:
+            order_date = datetime.strptime(order.orderdate, "%Y-%m-%dT%H:%M:%SZ")
+            if year and order_date.year != int(year):
+                continue
+            month_start = order_date.replace(day=1)
+            monthly_sales[month_start] += order.total
+        except ValueError:
+            continue
+
+    # Formatieren Sie die Daten in das gewünschte Format
+    sales_data = [
+        {'month': month, 'total_sales': total}
+        for month, total in sorted(monthly_sales.items())
+    ]
 
     return sales_data
     
