@@ -19,6 +19,28 @@ def calculate_average_order_value():
     total_orders = Order.objects.count()
     return total_sales / total_orders if total_orders > 0 else 0
 
+#repeat purchase rate
+
+def calculate_repeat_purchase_rate():
+    # Anzahl der Kunden mit mehr als einer Bestellung
+    repeat_customers = Order.objects.values('customerID').annotate(num_orders=Count('orderID')).filter(num_orders__gt=1).count()
+    
+    # Gesamtanzahl der Kunden
+    total_customers = Order.objects.values('customerID').distinct().count()
+    
+    # Berechne die Repeat Purchase Rate
+    repeat_purchase_rate = (repeat_customers / total_customers) * 100 if total_customers > 0 else 0
+    
+    return repeat_purchase_rate
+
+#gesamtumsatz keymetric
+def calculate_total_revenue():
+    # Gesamtumsatz
+    total_revenue = Order.objects.aggregate(total_revenue=Sum('total'))['total_revenue'] or 0
+    
+    return total_revenue
+
+
 #__________________________________Sales Analysis Products, year,size>Balkendigramm
 
 #total sales by year
