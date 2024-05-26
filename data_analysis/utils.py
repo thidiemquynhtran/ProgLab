@@ -51,7 +51,7 @@ def get_total_sales_by_month_with_filters(year=None):
         queryset = queryset.filter(orderdate__year=year)
     
     #umsatz pro monat agg
-    return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
+    return queryset.annotate(month=TruncMonth('orderdate')).values('month').annotate(total_sales=Sum('total')).order_by('month')
 
 
 #get total sales by size balken (aktuell nur jahr filter in balken)
