@@ -32,7 +32,7 @@ def get_total_sales_by_month_with_filters(year=None):
     return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
 
 
-#get total sales by size
+#get total sales by size balken (aktuell nur jahr filter in balken)
 def get_total_sales_by_size_with_filters(year=None, product=None, size=None):
     queryset = Order.objects.all()
 
@@ -45,7 +45,7 @@ def get_total_sales_by_size_with_filters(year=None, product=None, size=None):
 
     return queryset.values('size').annotate(total_sales=Sum('total')).order_by('size')
 
-# get total sales  by product 
+# get total sales  by product balken (aktuell nur jahr filter in balken)
 def get_total_sales_by_product_with_filters(product=None):
     queryset = OrderItem.objects.all()
 
