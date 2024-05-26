@@ -1,0 +1,37 @@
+/* styles.css */
+/* General style */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* style for header */
+header {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* Style for navbar */
+.navbar {
+    margin-bottom: 1rem;
+}
+
+/* Style for main content */
+main .card {
+    margin-bottom: 1rem;
+}
+
+/* Style for footer */
+footer {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
