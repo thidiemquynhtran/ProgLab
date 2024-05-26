@@ -68,9 +68,4 @@ def total_sales_by_state_view(request):
     data = get_total_sales_by_state(state)
     return Response(data)
 
-    average_order_value = calculate_average_order_value
-    return render(request, 'dashboard.html', {
-        'total_customers': total_customers,
-        'average_order_value': average_order_value,
-    })
-
+    

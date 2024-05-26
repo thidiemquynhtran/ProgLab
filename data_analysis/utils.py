@@ -22,15 +22,14 @@ def calculate_average_order_value():
 #__________________________________Sales Analysis Products, year,size>Balkendigramm
 
 #total sales by year
-def get_total_sales_by_year_with_filters(year=None, product=None):
+def get_total_sales_by_month_with_filters(year=None):
     queryset = Order.objects.all()
 
     if year:
         queryset = queryset.filter(order_date__year=year)
-    if product:
-        queryset = queryset.filter(orderitem__product__name=product)
-
-    return queryset.annotate(year=TruncYear('order_date')).values('year').annotate(total_sales=Sum('total')).order_by('year')
+    
+    #umsatz pro monat agg
+    return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
 
 
 #get total sales by size
@@ -58,14 +57,8 @@ def get_total_sales_by_product_with_filters(product=None):
 
     #___________pie chart Data
      
-def get_pizza_category_distribution(state=None, year=None):
+def get_pizza_category_distribution():
     queryset = OrderItem.objects.all()
-
-
-    if state:
-        queryset = queryset.filter(order__store__state=state)
-    if year:
-        queryset = queryset.filter(order__order_date__year=year)
 
     # Anzahl der verkauften Pizzen pro Kategorie
     pizza_category_counts = queryset.values('product__category').annotate(total_sales=Count('id'))
@@ -88,6 +81,13 @@ def get_pizza_category_distribution(state=None, year=None):
     #prozentuale Anteil jeder Kategorie an der Gesamtanzahl der verkauften Pizzen berechnet und als Liste von Dictionaries zurückgegeben, wobei jeder 
     #Dictionary die Kategorie und den prozentualen Anteil enthält.
 
+
+#neu: für Interaktivität/Funktion zur Aggregation der monatlichen Verkäufe nach Kategorie
+def get_monthly_sales_by_category(category):
+    queryset = Order.objects.filter(orderitem__product__category=category)
+    return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
+
+    
     #_________Line chart/ filter nach stat 
 
 
