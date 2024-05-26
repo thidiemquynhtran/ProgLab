@@ -48,7 +48,7 @@ def get_total_sales_by_month_with_filters(year=None):
     queryset = Order.objects.all()
 
     if year:
-        queryset = queryset.filter(order_date__year=year)
+        queryset = queryset.filter(orderdate__year=year)
     
     #umsatz pro monat agg
     return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
@@ -59,7 +59,7 @@ def get_total_sales_by_size_with_filters(year=None, product=None, size=None):
     queryset = Order.objects.all()
 
     if year:
-        queryset = queryset.filter(order_date__year=year)
+        queryset = queryset.filter(orderdate__year=year)
     if product:
         queryset = queryset.filter(orderitem__product__name=product)
     if size:
