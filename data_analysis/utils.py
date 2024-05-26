@@ -9,6 +9,7 @@ from django.db.models import Count #für pie
 from datetime import datetime
 from django.db.models.functions import ExtractMonth, ExtractYear
 from collections import defaultdict
+from decimal import Decimal
 
 
 #key metrics 
@@ -52,7 +53,7 @@ def get_total_sales_by_month_with_filters(year=None):
     queryset = Order.objects.all()
     
     # Initialisieren Sie eine Struktur zum Halten der aggregierten Daten
-    monthly_sales = defaultdict(float)
+    monthly_sales = defaultdict(Decimal)
 
     # Iterieren Sie über das Queryset und extrahieren Sie Datum und Umsatz
     for order in queryset:
@@ -61,7 +62,7 @@ def get_total_sales_by_month_with_filters(year=None):
             if year and order_date.year != int(year):
                 continue
             month_start = order_date.replace(day=1)
-            monthly_sales[month_start] += order.total
+            monthly_sales[month_start] += Decimal(order.total)
         except ValueError:
             continue
 
