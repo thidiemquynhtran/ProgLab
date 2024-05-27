@@ -22,6 +22,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', data_views.index_view, name='index'),
     path('api/', include('data_analysis.urls')),
+
+    #path for index.html,...
+    path('', include('data_analysis.urls')), 
 ]
 
 

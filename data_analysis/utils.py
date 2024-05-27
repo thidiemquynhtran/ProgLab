@@ -66,9 +66,13 @@ def get_total_sales_by_month_with_filters(year=None):
         except ValueError:
             continue
 
-    # Formatieren Sie die Daten in das gewünschte Format ohne Zeitinformationen
+   # Format the data into the desired format with separate year and month fields
     sales_data = [
-        {'month': month.strftime("%Y-%m-%d"), 'total_sales': str(total)}
+        {
+            'year': month.year,
+            'month': month.strftime("%m"),
+            'total_sales': str(total)
+        }
         for month, total in sorted(monthly_sales.items())
     ]
 
