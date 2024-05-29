@@ -83,7 +83,6 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OrderItem',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('orderid', models.ForeignKey(blank=True, db_column='orderID', null=True, on_delete=django.db.models.deletion.SET_NULL, to='data_analysis.order')),
                 ('sku', models.ForeignKey(blank=True, db_column='SKU', null=True, on_delete=django.db.models.deletion.SET_NULL, to='data_analysis.product')),
             ],

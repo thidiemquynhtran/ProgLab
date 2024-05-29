@@ -1,5 +1,7 @@
 # data_analysis/views.py
 from django.shortcuts import render
+import pandas as pd
+from .models import Order, OrderItem, Product
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .utils import (
@@ -12,7 +14,8 @@ from .utils import (
     get_total_sales_by_product_with_filters,
     get_pizza_category_distribution,
     get_monthly_sales_by_category,
-    get_total_sales_by_state
+    get_total_sales_by_state,
+    get_total_sales_by_year_with_filters
 )
 
 def index_view(request):
@@ -59,13 +62,24 @@ def total_sales_by_size_view(request):
 
 @api_view(['GET'])
 def total_sales_by_product_view(request):
-    product = request.query_params.get('product')
-    data = get_total_sales_by_product_with_filters(product)
+    # Holen Sie sich die erforderlichen Daten aus Ihrer Datenbank
+    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate','total'))
+    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
+    products_df = pd.DataFrame(Product.objects.values('sku', 'name','price'))
+
+    # Aufruf der Funktion mit den abgerufenen DataFrames als Argumente
+    data = get_total_sales_by_product_with_filters(orders_df, items_df, products_df)
     return Response(data)
 
 @api_view(['GET'])
 def pizza_category_distribution_view(request):
-    data = get_pizza_category_distribution()
+    # Holen Sie sich die erforderlichen Daten aus Ihrer Datenbank
+    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate','total'))
+    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
+    products_df = pd.DataFrame(Product.objects.values('sku', 'name','price'))
+
+    # Aufruf der Funktion mit den abgerufenen DataFrames als Argumente
+    data = get_pizza_category_distribution(orders_df, items_df, products_df)
     return Response(data)
 
 @api_view(['GET'])
@@ -80,4 +94,7 @@ def total_sales_by_state_view(request):
     data = get_total_sales_by_state(state)
     return Response(data)
 
-    
+@api_view(['GET'])
+def total_sales_by_year_view(request):
+    data = get_total_sales_by_year_with_filters()
+    return Response(data)
