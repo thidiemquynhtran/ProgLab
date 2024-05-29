@@ -197,8 +197,8 @@ def get_pizza_category_distribution(orders_df, items_df, products_df):
         order_items_products_df['Month'], categories=month_order, ordered=True
     )
 
-    # Gruppiere nach Jahr und Monat und summiere den Umsatz
-    result_df = order_items_products_df.groupby(['Year', 'Month'])['Revenue'].sum().reset_index(name='Revenue')
+    # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
+    result_df = order_items_products_df.groupby(['Year', 'Month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
 
     # Berechne den Gesamtumsatz
     total_revenue = result_df['Revenue'].sum()
@@ -209,7 +209,7 @@ def get_pizza_category_distribution(orders_df, items_df, products_df):
     # Konvertiere das DataFrame in das gewünschte Format
     result_dict = result_df.to_dict(orient='records')
 
-    return result_dict  
+    return result_dict
 
 
 #neu: für Interaktivität/Funktion zur Aggregation der monatlichen Verkäufe nach Kategorie
