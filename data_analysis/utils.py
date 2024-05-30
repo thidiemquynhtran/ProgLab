@@ -168,7 +168,7 @@ def get_total_sales_by_product_with_filters(orders_df, items_df, products_df):
 
     #___________pie chart Data
     
-def get_pizza_category_distribution(orders_df, items_df, products_df):
+def get_pizza_category_distribution(orders_df, items_df, products_df, year=None, month=None):
     # Join orders_df und items_df
     order_items_df = pd.merge(orders_df, items_df, on='orderid')
 
@@ -188,22 +188,19 @@ def get_pizza_category_distribution(orders_df, items_df, products_df):
     order_items_products_df['Year'] = order_items_products_df['orderdate'].dt.year
     order_items_products_df['Month'] = order_items_products_df['orderdate'].dt.month_name()
 
-    # Definiere die Reihenfolge der Monate manuell
-    month_order = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ]
-    order_items_products_df['Month'] = pd.Categorical(
-        order_items_products_df['Month'], categories=month_order, ordered=True
-    )
+    # Filter nach Jahr und Monat, falls angegeben
+    if year:
+        order_items_products_df = order_items_products_df[order_items_products_df['Year'] == int(year)]
+    if month:
+        order_items_products_df = order_items_products_df[order_items_products_df['Month'] == month]
 
     # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
     result_df = order_items_products_df.groupby(['Year', 'Month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
 
-    # Berechne den Gesamtumsatz
+    # Berechne den Gesamtumsatz der gefilterten Daten
     total_revenue = result_df['Revenue'].sum()
 
-    # Berechne den Anteil jedes Monats am Gesamtumsatz
+    # Berechne den Anteil jedes Eintrags am Gesamtumsatz
     result_df['RevenuePercentage'] = (result_df['Revenue'] / total_revenue) * 100
 
     # Konvertiere das DataFrame in das gewünschte Format
