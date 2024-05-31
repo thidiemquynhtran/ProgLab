@@ -71,11 +71,17 @@ def get_total_sales_by_month_with_filters(year=None):
         except ValueError:
             continue
 
+    # Define the month order
+    month_order = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+
    # Format the data into the desired format with separate year and month fields
     sales_data = [
         {
             'year': month.year,
-            'month': month.strftime("%m"),
+            'month': month_order[month.month - 1],  # Convert month number to month name
             'total_sales': str(total)
         }
         for month, total in sorted(monthly_sales.items())
@@ -185,23 +191,17 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
     order_items_products_df = order_items_products_df.dropna(subset=['orderdate'])
 
     # Extrahiere Jahr und Monat
-    order_items_products_df['Year'] = order_items_products_df['orderdate'].dt.year
-    order_items_products_df['Month'] = order_items_products_df['orderdate'].dt.month_name()
+    order_items_products_df['year'] = order_items_products_df['orderdate'].dt.year
+    order_items_products_df['month'] = order_items_products_df['orderdate'].dt.month_name()
 
     # Filter nach Jahr und Monat, falls angegeben
     if year:
-        order_items_products_df = order_items_products_df[order_items_products_df['Year'] == int(year)]
+        order_items_products_df = order_items_products_df[order_items_products_df['year'] == int(year)]
     if month:
-        order_items_products_df = order_items_products_df[order_items_products_df['Month'] == month]
+        order_items_products_df = order_items_products_df[order_items_products_df['month'] == month]
 
     # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
-    result_df = order_items_products_df.groupby(['Year', 'Month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
-
-    # Berechne den Gesamtumsatz der gefilterten Daten
-    total_revenue = result_df['Revenue'].sum()
-
-    # Berechne den Anteil jedes Eintrags am Gesamtumsatz
-    result_df['RevenuePercentage'] = (result_df['Revenue'] / total_revenue) * 100
+    result_df = order_items_products_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
 
     # Konvertiere das DataFrame in das gewünschte Format
     result_dict = result_df.to_dict(orient='records')
