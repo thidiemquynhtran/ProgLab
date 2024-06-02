@@ -1,6 +1,7 @@
 # data_analysis/views.py
 from django.shortcuts import render
 import pandas as pd
+from django.http import JsonResponse
 from .models import Order, OrderItem, Product
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -46,11 +47,10 @@ def total_revenue_view(request):
     return Response({'total_revenue': total_revenue})
 
 #Returns total sales by month, optional year filter
-@api_view(['GET'])
 def total_sales_by_month_view(request):
-    year = request.query_params.get('year')
-    data = get_total_sales_by_month_with_filters(year)
-    return Response(data)
+    year = request.GET.get('year', None)
+    sales_data = get_total_sales_by_month_with_filters(year=year)
+    return JsonResponse(sales_data, safe=False)
 
 @api_view(['GET'])
 def total_sales_by_size_view(request):
@@ -74,7 +74,7 @@ def total_sales_by_product_view(request):
 @api_view(['GET'])
 def pizza_category_distribution_view(request):
     # Holen Sie sich die erforderlichen Daten aus Ihrer Datenbank
-    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'total'))
+    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'nitems'))
     items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
     products_df = pd.DataFrame(Product.objects.values('sku', 'name', 'price'))
 
