@@ -14,7 +14,7 @@ import pandas as pd
 from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
 from django.http import JsonResponse
-
+from datetime import datetime
 
 #key metrics ----------
 
@@ -65,55 +65,43 @@ def get_total_sales_by_month_with_filters(year=None):
     if year:
         orders_qs = orders_qs.filter(order_date_dt__year=year)
     
-    # Annotate/aggregate the total sales for each month
-    monthly_sales = (
-        orders_qs
-        .annotate(month=ExtractMonth('order_date_dt'))
-        .annotate(year=ExtractYear('order_date_dt'))
-        .values('year', 'month')
-        .annotate(
-            total_sales=Sum(
+    # Calculate total sales for each order
+    orders_qs = orders_qs.annotate(
+        total_sales=Coalesce(
+            Sum(
                 ExpressionWrapper(
                     F('orderitem__orderid__nitems') * F('orderitem__sku__price'),
                     output_field=DecimalField()
                 )
-            )
+            ),
+            Value(0),
+            output_field=DecimalField()
         )
-        .order_by('month')
+    )
+    
+    # Annotate month and year
+    orders_qs = orders_qs.annotate(
+        month=ExtractMonth('order_date_dt'),
+        year=ExtractYear('order_date_dt')
+    )
+    
+    # Aggregate total sales by month and year
+    monthly_sales = (
+        orders_qs
+        .values('year', 'month')
+        .annotate(total_sales=Sum('total_sales'))
+        .order_by('year', 'month')
     )
 
-<<<<<<< HEAD
     # Format the data into the desired format with separate year and month fields
     sales_data = [
         {
             'year': month["year"],
             'month': f'{month["month"]:02}',
             'total_sales': str(month["total_sales"])
-=======
-    # Define the month order
-    month_order = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]
-
-   # Format the data into the desired format with separate year and month fields
-    sales_data = [
-        {
-            'year': month.year,
-            'month': month_order[month.month - 1],  # Convert month number to month name
-            'total_sales': str(total)
->>>>>>> 214295a54e7ce27086a117076f405371dd63c584
         }
         for month in monthly_sales
     ]
-
-    # Calculate the total sales for the entire year or dataset
-    total_sales = sum(Decimal(month['total_sales']) for month in sales_data)
-    sales_data.append({
-        'year': year or 'all',
-        'month': 'Total',
-        'total_sales': str(total_sales)
-    })
 
     return sales_data
 
