@@ -9,7 +9,6 @@ $(document).ready(function () {
       method: "GET",
       dataType: "json",
       success: function (data) {
-        console.log("Bar chart data:", data);
         callback(data);
       },
       error: function (error) {
@@ -19,18 +18,6 @@ $(document).ready(function () {
   }
 
   function fetchPieChartData(year, month, callback) {
-    // $.ajax({
-    //   url: `/pizza-category-distribution?year=${year}&month=${month}`,
-    //   method: "GET",
-    //   dataType: "json",
-    //   success: function (data) {
-    //     callback(data);
-    //   },
-    //   error: function (error) {
-    //     console.error("Error fetching pie chart data", error);
-    //   },
-    // });
-    // Modify the URL to include the year and month as query parameters
     $.ajax({
       url: `/pizza-category-distribution`,
       method: "GET",
@@ -46,11 +33,25 @@ $(document).ready(function () {
     });
   }
 
+  function fetchMonthlySalesByCategory(year, category, callback) {
+    $.ajax({
+      url: `/monthly-sales-by-category`,
+      method: "GET",
+      data: { year: year, category: category },
+      dataType: "json",
+      success: function (data) {
+        callback(data);
+      },
+      error: function (error) {
+        console.error("Error fetching monthly sales by category", error);
+      },
+    });
+  }
+
   function getFilteredData(year, callback) {
     fetchBarChartData(year, callback);
   }
-
-  function createBarChart(filteredData) {
+  function createBarChart(filteredData, categorySalesData) {
     var months = filteredData.map((item) => item.month);
     var totalSalesData = filteredData.map((item) =>
       parseFloat(item.total_sales)
@@ -64,21 +65,15 @@ $(document).ready(function () {
       },
     ];
 
-    if (selectedCategory) {
-      var categorySalesData = months.map((month) => {
-        if (selectedCategory) {
-          var entry = filteredData.find(
-            (item) => item.month === month && item.category === selectedCategory
-          );
-          return entry ? entry.sales : 0;
-        } else {
-          return 0;
-        }
-      });
-
+    // Check if categorySalesData is provided and add a dataset for category sales
+    if (categorySalesData) {
+      var categorySales = categorySalesData.map((item) =>
+        parseFloat(item.Revenue)
+      );
+      var categoryNames = categorySalesData.map((item) => item.name);
       datasets.push({
         label: selectedCategory + " Sales",
-        data: categorySalesData,
+        data: categorySales,
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       });
     }
@@ -111,20 +106,22 @@ $(document).ready(function () {
   }
 
   function createPieChart(filteredData) {
-    var categories = filteredData.map((item) => item.name);
-
-    //var data = filteredData.map((item) => item.Revenue);
-
-    //Calculate the total sales
+    var categories = Array.from(new Set(filteredData.map((item) => item.name)));
     var totalSales = filteredData.reduce((sum, item) => sum + item.Revenue, 0);
-
-    // Calculate the percentage of total revenue for each category
     var data = categories.map((category) => {
       var categorySales = filteredData
         .filter((item) => item.name === category)
         .reduce((sum, item) => sum + item.Revenue, 0);
       return (categorySales / totalSales) * 100;
     });
+
+    // Calculate the total Revenue (in numbers not percentage) for each category
+    // var data = categories.map((category) => {
+    //   var categorySales = filteredData
+    //     .filter((item) => item.name === category)
+    //     .reduce((sum, item) => sum + item.Revenue, 0);
+    //   return categorySales;
+    // });
 
     var ctx = document.getElementById("pieChart").getContext("2d");
     if (pieChart) {
@@ -143,6 +140,7 @@ $(document).ready(function () {
       },
       options: {
         onClick: function (evt) {
+          console.log("Pie chart clicked");
           var activePoints = pieChart.getElementsAtEventForMode(
             evt,
             "nearest",
@@ -151,6 +149,7 @@ $(document).ready(function () {
           );
           if (activePoints.length) {
             selectedCategory = pieChart.data.labels[activePoints[0].index];
+            console.log("Selected category:", selectedCategory);
             updateBarChart();
           }
         },
@@ -159,7 +158,6 @@ $(document).ready(function () {
   }
 
   function updatePieChart(month) {
-    // Fetch the selected year from the dropdown
     var year = selectedYear;
     fetchPieChartData(year, month, function (data) {
       createPieChart(data);
@@ -167,11 +165,31 @@ $(document).ready(function () {
   }
 
   function updateBarChart() {
-    // Fetch the selected year from the dropdown
+    console.log("updateBarChart function called");
+
     var year = selectedYear;
-    getFilteredData(year, function (data) {
-      createBarChart(data);
-    });
+    console.log("Selected year:", year);
+
+    if (selectedCategory) {
+      console.log("Selected category:", selectedCategory);
+      fetchMonthlySalesByCategory(
+        year,
+        selectedCategory,
+        function (categoryData) {
+          console.log("Monthly sales data for category:", categoryData);
+          fetchBarChartData(year, function (totalData) {
+            console.log("Bar chart data:", totalData);
+            createBarChart(totalData, categoryData); // Pass both total sales data and category sales data to createBarChart
+          });
+        }
+      );
+    } else {
+      console.log("No category selected");
+      fetchBarChartData(year, function (data) {
+        console.log("Bar chart data:", data);
+        createBarChart(data, null);
+      });
+    }
   }
 
   function getRandomColor() {
@@ -183,30 +201,27 @@ $(document).ready(function () {
     return color;
   }
 
-  // $("#yearFilter").change(function () {
-  //   selectedCategory = null;
-  //   var year = parseInt($(this).val());
-
-  //   getFilteredData(year, function (data) {
-  //     createBarChart(data);
-  //     createPieChart(data);
-  //   });
-  // });
   $("#yearFilter").change(function () {
-    // Update the selected year when the dropdown value changes
+    selectedCategory = null;
     selectedYear = parseInt($(this).val());
 
-    // Update both charts with the filtered data for the selected year
     getFilteredData(selectedYear, function (data) {
       createBarChart(data);
+    });
+
+    fetchPieChartData(selectedYear, null, function (data) {
       createPieChart(data);
     });
   });
 
-  // Initially load the data for the default year
+  // Initial load
   selectedYear = parseInt($("#yearFilter").val());
+
   getFilteredData(selectedYear, function (data) {
     createBarChart(data);
+  });
+
+  fetchPieChartData(selectedYear, null, function (data) {
     createPieChart(data);
   });
 });
