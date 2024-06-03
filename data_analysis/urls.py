@@ -3,6 +3,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('total-customers/', views.total_customers_view, name='total_customers'),
     path('average-order-value/', views.average_order_value_view, name='average_order_value'),
@@ -15,7 +16,7 @@ urlpatterns = [
     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
     path('total-sales-by-year/', views.total_sales_by_year_view, name='total_sales_by_year'),
-    path('api/customer-locations/', data_views.customer_locations_view, name='customer_locations'),
+    path('api/customer-locations/', views.customer_locations_view, name='customer_locations'),
 
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
