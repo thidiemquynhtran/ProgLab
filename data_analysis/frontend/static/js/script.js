@@ -115,6 +115,14 @@ $(document).ready(function () {
       return (categorySales / totalSales) * 100;
     });
 
+    // Calculate the total Revenue (in numbers not percentage) for each category
+    // var data = categories.map((category) => {
+    //   var categorySales = filteredData
+    //     .filter((item) => item.name === category)
+    //     .reduce((sum, item) => sum + item.Revenue, 0);
+    //   return categorySales;
+    // });
+
     var ctx = document.getElementById("pieChart").getContext("2d");
     if (pieChart) {
       pieChart.destroy();
