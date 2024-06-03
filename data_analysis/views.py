@@ -11,7 +11,6 @@ from .utils import (
     calculate_repeat_purchase_rate,
     calculate_total_revenue,
     get_total_sales_by_month_with_filters,
-    get_total_sales_by_size_with_filters,
     get_total_sales_by_product_with_filters,
     get_pizza_category_distribution,
     get_customer_locations,
@@ -48,18 +47,11 @@ def total_revenue_view(request):
     return Response({'total_revenue': total_revenue})
 
 #Returns total sales by month, optional year filter
+@api_view(['GET'])
 def total_sales_by_month_view(request):
     year = request.GET.get('year', None)
     sales_data = get_total_sales_by_month_with_filters(year=year)
     return JsonResponse(sales_data, safe=False)
-
-@api_view(['GET'])
-def total_sales_by_size_view(request):
-    year = request.query_params.get('year')
-    product = request.query_params.get('product')
-    size = request.query_params.get('size')
-    data = get_total_sales_by_size_with_filters(year, product, size)
-    return Response(data)
 
 @api_view(['GET'])
 def total_sales_by_product_view(request):
@@ -90,7 +82,7 @@ def pizza_category_distribution_view(request):
 @api_view(['GET'])
 def monthly_sales_by_category_view(request):
    # Fetch required data from your database
-    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'total'))
+    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'nitems'))
     items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
     products_df = pd.DataFrame(Product.objects.values('sku', 'name', 'price'))
 
