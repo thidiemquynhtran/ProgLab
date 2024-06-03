@@ -14,6 +14,7 @@ from .utils import (
     get_total_sales_by_size_with_filters,
     get_total_sales_by_product_with_filters,
     get_pizza_category_distribution,
+    get_customer_locations,
     get_monthly_sales_by_category,
     get_total_sales_by_state,
     get_total_sales_by_year_with_filters
@@ -111,3 +112,9 @@ def total_sales_by_state_view(request):
 def total_sales_by_year_view(request):
     data = get_total_sales_by_year_with_filters()
     return Response(data)
+
+@api_view(['GET'])
+def customer_locations_view(request):
+    customer_locations = get_customer_locations()
+    return Response({'customer_locations': customer_locations})
+

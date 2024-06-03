@@ -274,3 +274,8 @@ def get_total_sales_by_state(state=None):
         queryset = queryset.filter(store__state=state) # BS geg BSt filtern
 
     return queryset.annotate(year=TruncYear('order_date')).values('year').annotate(total_sales=Sum('total')).order_by('year') #Bst nach jahr + SUm Verkauf jahr
+
+# heatmapdata:
+def get_customer_locations():
+    customers = Customer.objects.values('latitude', 'longitude')
+    return list(customers)

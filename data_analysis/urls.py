@@ -15,6 +15,7 @@ urlpatterns = [
     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
     path('total-sales-by-year/', views.total_sales_by_year_view, name='total_sales_by_year'),
+    path('api/customer-locations/', data_views.customer_locations_view, name='customer_locations'),
 
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
