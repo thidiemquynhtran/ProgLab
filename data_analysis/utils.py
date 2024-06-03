@@ -209,31 +209,17 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
     order_items_df = order_items_df.dropna(subset=['orderdate'])
 
     # Extrahiere Jahr und Monat
-<<<<<<< HEAD
-    order_items_df['Year'] = order_items_df['orderdate'].dt.year
-    order_items_df['Month'] = order_items_df['orderdate'].dt.month
+    order_items_df['year'] = order_items_df['orderdate'].dt.year
+    order_items_df['month'] = order_items_df['orderdate'].dt.month_name()
 
     # Filter nach Jahr und Monat, falls angegeben
     if year:
-        order_items_df = order_items_df[order_items_df['Year'] == int(year)]
+        order_items_df = order_items_df[order_items_df['year'] == int(year)]
     if month:
-        order_items_df = order_items_df[order_items_df['Month'] == int(month)]
-
-    # Gruppiere nach Jahr, Monat und Produktname und summiere den Umsatz
-    result_df = order_items_df.groupby(['Year', 'Month', 'name'])['Revenue'].sum().reset_index(name='TotalSales')
-=======
-    order_items_products_df['year'] = order_items_products_df['orderdate'].dt.year
-    order_items_products_df['month'] = order_items_products_df['orderdate'].dt.month_name()
-
-    # Filter nach Jahr und Monat, falls angegeben
-    if year:
-        order_items_products_df = order_items_products_df[order_items_products_df['year'] == int(year)]
-    if month:
-        order_items_products_df = order_items_products_df[order_items_products_df['month'] == month]
+        order_items_df = order_items_df[order_items_df['month'] == month]
 
     # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
-    result_df = order_items_products_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
->>>>>>> 214295a54e7ce27086a117076f405371dd63c584
+    result_df = order_items_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
 
     # Konvertiere das DataFrame in das gewünschte Format
     result_dict = result_df.to_dict(orient='records')
@@ -242,12 +228,43 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
 
 
 #neu: für Interaktivität/Funktion zur Aggregation der monatlichen Verkäufe nach Kategorie
-def get_monthly_sales_by_category(category):
-    queryset = Order.objects.filter(orderitem__product__name=category)
-    return queryset.annotate(month=TruncMonth('order_date')).values('month').annotate(total_sales=Sum('total')).order_by('month')
+def get_monthly_sales_by_category(orders_df, items_df, products_df, year=None, category=None):
+    # Join orders_df and items_df
+    # Join orders_df and items_df
+    order_items_df = pd.merge(orders_df, items_df, on='orderid')
 
-    
-    #_________Line chart/ filter nach stat 
+    # Join order_items_df and products_df
+    order_items_products_df = pd.merge(order_items_df, products_df, on='sku')
+
+    # Calculate revenue per order
+    order_items_products_df['Revenue'] = order_items_products_df['total'] * order_items_products_df['price']
+
+    # Extract year and month, handling mixed date formats
+    order_items_products_df['orderdate'] = pd.to_datetime(order_items_products_df['orderdate'], errors='coerce')
+
+    # Remove rows with invalid date values
+    order_items_products_df = order_items_products_df.dropna(subset=['orderdate'])
+
+    # Extract year and month
+    order_items_products_df['year'] = order_items_products_df['orderdate'].dt.year
+    order_items_products_df['month'] = order_items_products_df['orderdate'].dt.month_name()
+
+    # Filter by year and month if specified
+    if year:
+        order_items_products_df = order_items_products_df[order_items_products_df['year'] == int(year)]
+
+    # Filter by category if specified
+    if category:
+        order_items_products_df = order_items_products_df[order_items_products_df['name'] == category]
+
+    # Group by year, month, and category name and sum the revenue
+    result_df = order_items_products_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
+
+    # Convert the DataFrame to the desired format
+    result_dict = result_df.to_dict(orient='records')
+
+    return result_dict
+
 
 
 def get_total_sales_by_state(state=None):

@@ -88,8 +88,17 @@ def pizza_category_distribution_view(request):
 
 @api_view(['GET'])
 def monthly_sales_by_category_view(request):
-    category = request.query_params.get('category')
-    data = get_monthly_sales_by_category(category)
+   # Fetch required data from your database
+    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'total'))
+    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
+    products_df = pd.DataFrame(Product.objects.values('sku', 'name', 'price'))
+
+    # Get the year and category parameters from the request
+    year = request.GET.get('year')
+    category = request.GET.get('category')
+
+    # Call the function with the retrieved DataFrames as arguments and the optional filters
+    data = get_monthly_sales_by_category(orders_df, items_df, products_df, year=year, category=category)
     return Response(data)
 
 @api_view(['GET'])
