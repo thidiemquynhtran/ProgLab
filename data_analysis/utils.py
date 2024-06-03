@@ -82,12 +82,27 @@ def get_total_sales_by_month_with_filters(year=None):
         .order_by('month')
     )
 
+<<<<<<< HEAD
     # Format the data into the desired format with separate year and month fields
     sales_data = [
         {
             'year': month["year"],
             'month': f'{month["month"]:02}',
             'total_sales': str(month["total_sales"])
+=======
+    # Define the month order
+    month_order = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+
+   # Format the data into the desired format with separate year and month fields
+    sales_data = [
+        {
+            'year': month.year,
+            'month': month_order[month.month - 1],  # Convert month number to month name
+            'total_sales': str(total)
+>>>>>>> 214295a54e7ce27086a117076f405371dd63c584
         }
         for month in monthly_sales
     ]
@@ -206,6 +221,7 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
     order_items_df = order_items_df.dropna(subset=['orderdate'])
 
     # Extrahiere Jahr und Monat
+<<<<<<< HEAD
     order_items_df['Year'] = order_items_df['orderdate'].dt.year
     order_items_df['Month'] = order_items_df['orderdate'].dt.month
 
@@ -217,6 +233,19 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
 
     # Gruppiere nach Jahr, Monat und Produktname und summiere den Umsatz
     result_df = order_items_df.groupby(['Year', 'Month', 'name'])['Revenue'].sum().reset_index(name='TotalSales')
+=======
+    order_items_products_df['year'] = order_items_products_df['orderdate'].dt.year
+    order_items_products_df['month'] = order_items_products_df['orderdate'].dt.month_name()
+
+    # Filter nach Jahr und Monat, falls angegeben
+    if year:
+        order_items_products_df = order_items_products_df[order_items_products_df['year'] == int(year)]
+    if month:
+        order_items_products_df = order_items_products_df[order_items_products_df['month'] == month]
+
+    # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
+    result_df = order_items_products_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
+>>>>>>> 214295a54e7ce27086a117076f405371dd63c584
 
     # Konvertiere das DataFrame in das gewünschte Format
     result_dict = result_df.to_dict(orient='records')
