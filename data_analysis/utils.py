@@ -56,6 +56,12 @@ def calculate_total_revenue():
 
 #sales nach month
 def get_total_sales_by_month_with_filters(year=None):
+    # Map month numbers to month names
+    month_names = {
+        1: "January", 2: "February", 3: "March", 4: "April",
+        5: "May", 6: "June", 7: "July", 8: "August",
+        9: "September", 10: "October", 11: "November", 12: "December"
+    }
     # Filter the orders queryset by year if provided
     orders_qs = Order.objects.all()
     # Cast orderdate to DateTimeField
@@ -84,19 +90,19 @@ def get_total_sales_by_month_with_filters(year=None):
     sales_data = [
         {
             'year': month["year"],
-            'month': f'{month["month"]:02}',
+            'month': month_names[month["month"]],
             'total_sales': str(month["total_sales"])
         }
         for month in monthly_sales
     ]
  
     # Calculate the total sales for the entire year or dataset
-    total_sales = sum(Decimal(month['total_sales']) for month in sales_data)
-    sales_data.append({
-        'year': year or 'all',
-        'month': 'Total',
-        'total_sales': str(total_sales)
-    })
+    # total_sales = sum(Decimal(month['total_sales']) for month in sales_data)
+    # sales_data.append({
+    #     'year': year or 'all',
+    #     'month': 'Total',
+    #     'total_sales': str(total_sales)
+    # })
  
     return sales_data
 
