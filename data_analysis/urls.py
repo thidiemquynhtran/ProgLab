@@ -20,6 +20,7 @@ urlpatterns = [
     path('total-items-sold/', views.total_items_sold_view, name='total_items_sold'),
     path('total-orders/', views.total_orders_view, name='total_orders'),
 
+
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),
 
