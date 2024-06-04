@@ -1,37 +1,32 @@
-/* styles.css */
-/* General style */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* style for header */
-header {
-    background-color: #343a40;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
+.card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    cursor: pointer; /* Pointer Cursor für klickbare Karten */
+    transition: transform 0.3s;
 }
 
-/* Style for navbar */
-.navbar {
-    margin-bottom: 1rem;
+.card:hover {
+    transform: scale(1.05);
 }
 
-/* Style for main content */
-main .card {
-    margin-bottom: 1rem;
+.card-title {
+    font-weight: bold;
 }
 
-/* Style for footer */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 footer {
-    background-color: #343a40;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
-    position: relative;
-    bottom: 0;
-    width: 100%;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-dark.bg-primary {
+    background-color: #0d6efd !important; /* Dark blue */
 }
