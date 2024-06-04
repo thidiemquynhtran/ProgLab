@@ -113,7 +113,6 @@ def customer_locations_view(request):
     customer_locations = get_customer_locations()
     return Response({'customer_locations': customer_locations})
 
-
 #Return total shops keymetric
 @api_view(['GET'])
 def total_shops_view(request):
