@@ -3,7 +3,7 @@
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
 from django.db.models import Count, Sum
-from .models import Customer, Order
+from .models import Customer, Order,Store
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 from datetime import datetime
@@ -268,3 +268,35 @@ def get_total_sales_by_state(state=None):
 def get_customer_locations():
     customers = Customer.objects.values('latitude', 'longitude')
     return list(customers)
+
+def get_line_chart_data():
+    #still not done
+    # Query the database using Django's ORM
+     queryset = Order.objects.all()
+
+     # Extract required data fields and format into the desired JSON structure
+     formatted_results = [
+         {
+             "timestamp": item.orderdate[:10],  # Extract the date part from the datetime field
+             "value": float(item.total)  # Convert total to float for JSON compatibility
+         }
+         for item in queryset
+     ]
+
+     # Return the JSON response
+     return JsonResponse(formatted_results, safe=False)
+
+ #Keymetric: Total Number of Shops --> Shops page 
+def calculate_total_shops():
+    total_shops = Store.objects.count()
+    return total_shops
+
+ #Keymetric: Total Items Sold --> Products page
+def calculate_total_items_sold():
+     total_items_sold= OrderItem.objects.aggregate(total_items=Sum('quantity'))['total_items'] or 0
+     return total_items_sold
+
+ #Keymetric: Total Number of Orders --> Homepage
+def calculate_total_orders():
+     total_orders = Order.objects.count()
+     return total_orders
