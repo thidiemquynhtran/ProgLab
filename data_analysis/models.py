@@ -46,7 +46,7 @@ class Order(models.Model):
     orderid = models.IntegerField(db_column='orderID', primary_key=True)  # Field name made lowercase.
     customerid = models.ForeignKey(Customer, on_delete=models.SET_NULL, db_column='customerID', blank=True, null=True)  # Field name made lowercase.
     storeid = models.ForeignKey(Store, on_delete=models.SET_NULL, db_column='storeID', blank=True, null=True)  # Field name made lowercase.
-    orderdate = models.DateTimeField(db_column='orderDate', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    orderdate = models.CharField(db_column='orderDate', max_length=20, blank=True, null=True)  # Field name made lowercase.
     nitems = models.IntegerField(db_column='nItems', blank=True, null=True)  # Field name made lowercase.
     total = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
