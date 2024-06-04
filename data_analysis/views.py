@@ -16,7 +16,10 @@ from .utils import (
     get_customer_locations,
     get_monthly_sales_by_category,
     get_total_sales_by_state,
-    get_total_sales_by_year_with_filters
+    get_total_sales_by_year_with_filters,
+    calculate_total_shops,
+    calculate_total_items_sold,
+    calculate_total_orders
 )
 
 def index_view(request):
@@ -110,3 +113,21 @@ def customer_locations_view(request):
     customer_locations = get_customer_locations()
     return Response({'customer_locations': customer_locations})
 
+
+#Return total shops keymetric
+@api_view(['GET'])
+def total_shops_view(request):
+    total_shops = calculate_total_shops()
+    return Response({'total_shops': total_shops})
+
+#Return total items sold keymetric
+@api_view(['GET'])
+def total_items_sold_view(request):
+    total_items_sold = calculate_total_items_sold()
+    return Response({'total_items_sold': total_items_sold})
+
+#Return total orders keymetric
+@api_view(['GET'])
+def total_orders_view(request):
+    total_orders = calculate_total_orders()
+    return Response({'total_orders': total_orders})
