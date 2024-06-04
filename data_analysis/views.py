@@ -25,6 +25,11 @@ from .utils import (
 def index_view(request):
     return render(request, 'index.html')
 
+def products_view(request):
+    # Your logic to prepare data for the template (if needed)
+    context = {}  # Create a context dictionary to pass data to the template (if needed)
+    return render(request, 'products.html', context)
+
 #Returns total number of customers
 @api_view(['GET'])
 def total_customers_view(request):

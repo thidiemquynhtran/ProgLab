@@ -24,6 +24,9 @@ urlpatterns = [
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),
 
+    path('data_analysis/products.html', views.products_view, name='products'),
+
+
 ]
 
 
