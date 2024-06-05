@@ -30,6 +30,11 @@ def products_view(request):
     context = {}  # Create a context dictionary to pass data to the template (if needed)
     return render(request, 'products.html', context)
 
+def stores_view(request):
+    # Your logic to prepare data for the template (if needed)
+    context = {} 
+    return render(request, 'stores.html', context)
+
 #Returns total number of customers
 @api_view(['GET'])
 def total_customers_view(request):

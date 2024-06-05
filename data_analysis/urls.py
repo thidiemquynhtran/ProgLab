@@ -15,7 +15,7 @@ urlpatterns = [
     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
     path('total-sales-by-year/', views.total_sales_by_year_view, name='total_sales_by_year'),
-    path('api/customer-locations/', views.customer_locations_view, name='customer_locations'),
+    path('customer-locations/', views.customer_locations_view, name='customer_locations'),
     path('total-shops/', views.total_shops_view, name='total_shops'),
     path('total-items-sold/', views.total_items_sold_view, name='total_items_sold'),
     path('total-orders/', views.total_orders_view, name='total_orders'),
@@ -23,9 +23,8 @@ urlpatterns = [
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),
-
     path('data_analysis/products.html', views.products_view, name='products'),
-
+    path('data_analysis/stores.html', views.stores_view, name='stores'),
 
 ]
 
