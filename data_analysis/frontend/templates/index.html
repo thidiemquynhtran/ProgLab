@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!--script src="{% static 'js/script.js' %}"></%script-->
+    <script src="{% static 'js/lineChart.js' %}"></script>
 </head>
   <body>
     <header class="bg-dark text-white text-center py-3">
@@ -77,6 +77,38 @@
           </div>
         </div>
       </div> 
+      <div class="row">
+<div class="col-md-4">
+<div class="card text-white bg-info mb-3">
+<div class="card-body">
+<h5 class="card-title">Total Orders</h5>
+<p class="card-text" id="totalOrders">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card text-white bg-warning mb-3">
+<div class="card-body">
+<h5 class="card-title">Total Revenue</h5>
+<p class="card-text" id="totalRevenue">0</p>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card text-white bg-danger mb-3">
+<div class="card-body">
+<h5 class="card-title">Repeat Purchase Rate</h5>
+<p class="card-text" id="repeatPurchaseRate">0</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Restlicher bestehender Inhalt -->
+<div class="row">
+<div class="col-md-12">
+<canvas id="lineChart"></canvas>
+</div>
+</div>
     </main>
     <footer class="bg-dark text-white text-center py-3">
       <p>&copy; 2024 PizzaToGo</p>
