@@ -20,8 +20,9 @@ from .utils import (
     calculate_total_shops,
     calculate_total_items_sold,
     calculate_total_orders,
-    get_revenue_by_store_in_state
-  
+    get_revenue_by_store_in_state,
+    get_monthly_sales_progress
+
     )
 
 def index_view(request):
@@ -152,3 +153,9 @@ def revenue_by_store_in_state_view(request):
     
     data = get_revenue_by_store_in_state(state)
     return JsonResponse(data, safe=False)
+
+#Return line chart monthly sales
+@api_view(['GET'])
+def monthly_sales_progress_view(request):
+    data = get_monthly_sales_progress()
+    return Response(data)
