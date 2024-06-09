@@ -291,16 +291,12 @@ def get_revenue_by_store_in_state(state):
         return {"error": "State parameter is required"}
 
     # Query to get all stores in the given state, aliasing longtitude to longitude_alias
-    stores = Store.objects.filter(state=state).annotate(
-        longitude_alias=F('longtitude')  # Aliasing the field correctly
-    ).values(
-        'storeid', 'zipcode', 'state', 'city', 'latitude', 'longitude_alias'  # Using the alias 'longitude_alias'
+    stores = Store.objects.filter(state=state).values(
+        'storeid', 'zipcode', 'state', 'city', 'latitude', 'longitude'
     )
 
     # Convert stores queryset to a dictionary for easier manipulation
-    store_revenues = {store['storeid']: store for store in stores}
-    for store in store_revenues.values():
-        store['revenue'] = 0  # Initialize revenue to 0
+    store_revenues = {store['storeid']: {**store, 'revenue': 0} for store in stores}
 
     # Query to get all orders in the given state
     orders = Order.objects.filter(storeid__state=state).values('storeid').annotate(total_revenue=Sum('total'))
@@ -310,12 +306,9 @@ def get_revenue_by_store_in_state(state):
         storeid = order['storeid']
         total_revenue = order['total_revenue']
         if storeid in store_revenues:
-            store_revenues[storeid]['revenue'] += total_revenue
+            store_revenues[storeid]['revenue'] = total_revenue
 
-    # Convert dictionary to a list of stores with their revenue
-    result = list(store_revenues.values())
-    return result
-
+    return list(store_revenues.values())
 
 #Line chart: total sales for the three years 
 def get_monthly_sales_progress():
