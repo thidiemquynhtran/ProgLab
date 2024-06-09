@@ -19,6 +19,7 @@ urlpatterns = [
     path('total-shops/', views.total_shops_view, name='total_shops'),
     path('total-items-sold/', views.total_items_sold_view, name='total_items_sold'),
     path('total-orders/', views.total_orders_view, name='total_orders'),
+    path('revenue-by-store/', views.revenue_by_store_in_state_view, name='revenue_by_store'),
 
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)

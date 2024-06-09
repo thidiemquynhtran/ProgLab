@@ -19,8 +19,10 @@ from .utils import (
     get_total_sales_by_year_with_filters,
     calculate_total_shops,
     calculate_total_items_sold,
-    calculate_total_orders
-)
+    calculate_total_orders,
+    get_revenue_by_store_in_state
+  
+    )
 
 def index_view(request):
     return render(request, 'index.html')
@@ -140,3 +142,13 @@ def total_items_sold_view(request):
 def total_orders_view(request):
     total_orders = calculate_total_orders()
     return Response({'total_orders': total_orders})
+
+#Return bar chart compare revenue
+@api_view(['GET'])
+def revenue_by_store_in_state_view(request):
+    state = request.GET.get('state')
+    if not state:
+        return Response({"error": "State parameter is required"}, status=400)
+    
+    data = get_revenue_by_store_in_state(state)
+    return JsonResponse(data, safe=False)
