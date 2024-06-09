@@ -147,9 +147,7 @@ def total_orders_view(request):
 #Return bar chart compare revenue
 @api_view(['GET'])
 def revenue_by_store_in_state_view(request):
-    state = request.GET.get('state')
-    if not state:
-        return Response({"error": "State parameter is required"}, status=400)
+    state = request.GET.get('state', None)
     
     data = get_revenue_by_store_in_state(state)
     return JsonResponse(data, safe=False)
