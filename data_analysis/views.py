@@ -4,6 +4,9 @@ import pandas as pd
 from django.http import JsonResponse
 from .models import Order, OrderItem, Product
 from rest_framework.decorators import api_view
+from rest_framework import generics
+from .models import PieData, TotalSalesByMonthBar
+from .serializers import PieDataSerializer, TotalSalesByMonthBarSerializer
 from rest_framework.response import Response
 from .utils import (
     calculate_total_customers,
@@ -19,7 +22,10 @@ from .utils import (
     get_total_sales_by_year_with_filters,
     calculate_total_shops,
     calculate_total_items_sold,
-    calculate_total_orders
+    calculate_total_orders,
+    PieData, 
+    get_bar_data,
+    get_pie_data
 )
 
 def index_view(request):
@@ -140,3 +146,17 @@ def total_items_sold_view(request):
 def total_orders_view(request):
     total_orders = calculate_total_orders()
     return Response({'total_orders': total_orders})
+
+class PieDataListAPIView(generics.ListAPIView):
+    queryset = PieData.objects.all()
+    serializer_class = PieDataSerializer
+
+@api_view(['GET'])
+def total_sales_by_month_bar_list_view(request):
+    bar_data = get_bar_data()
+    return Response(bar_data)
+
+@api_view(['GET'])
+def pie_data_view(request):
+    pie_data = get_pie_data()
+    return Response(pie_data)

@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
 from django.http import JsonResponse
 from datetime import datetime
+from .models import PieData, TotalSalesByMonthBar 
 
 #key metrics ----------
 
@@ -300,3 +301,54 @@ def calculate_total_items_sold():
 def calculate_total_orders():
      total_orders = Order.objects.count()
      return total_orders
+
+# Pie Data
+def get_pie_data():
+    pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
+
+     # Konvertiere den Monat in Namenformat
+    month_mapping = {
+        1: 'Januar',
+        2: 'Februar',
+        3: 'März',
+        4: 'April',
+        5: 'Mai',
+        6: 'Juni',
+        7: 'Juli',
+        8: 'August',
+        9: 'September',
+        10: 'Oktober',
+        11: 'November',
+        12: 'Dezember',
+    }
+
+    for item in pie_data:
+        item['month'] = month_mapping.get(item['month'], '')
+
+    return pie_data
+
+# Bar Data
+def get_bar_data():
+    bar_data = TotalSalesByMonthBar.objects.all().values('year', 'month', 'revenue')
+
+    # Konvertiere den Monat in Namenformat
+    month_mapping = {
+        1: 'Januar',
+        2: 'Februar',
+        3: 'März',
+        4: 'April',
+        5: 'Mai',
+        6: 'Juni',
+        7: 'Juli',
+        8: 'August',
+        9: 'September',
+        10: 'Oktober',
+        11: 'November',
+        12: 'Dezember',
+    }
+
+    for item in bar_data:
+        item['month'] = month_mapping.get(item['month'], '')
+
+    return bar_data
+

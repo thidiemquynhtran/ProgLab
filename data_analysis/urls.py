@@ -19,7 +19,8 @@ urlpatterns = [
     path('total-shops/', views.total_shops_view, name='total_shops'),
     path('total-items-sold/', views.total_items_sold_view, name='total_items_sold'),
     path('total-orders/', views.total_orders_view, name='total_orders'),
-
+    path('pie-data/', views.pie_data_view, name='pie_data_list'),
+    path('total-sales-Bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),
@@ -29,4 +30,4 @@ urlpatterns = [
 ]
 
 
-# path('dashboard/', views.dashboard, name='dashboard'), 
+# path('dashboard/', views.dashboard, name='dashboard'),

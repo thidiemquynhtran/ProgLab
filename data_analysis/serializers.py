@@ -1,6 +1,6 @@
 # data_analysis/serializers.py
 from rest_framework import serializers
-from .models import Customer, Product, Store, Order, OrderItem
+from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = '__all__'
+
+class PieDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PieData
+        fields = '__all__'
+
+class TotalSalesByMonthBarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TotalSalesByMonthBar
+        exclude = ['id']  # Die id-Spalte ausschließen

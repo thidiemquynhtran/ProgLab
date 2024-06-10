@@ -46,18 +46,49 @@ class Order(models.Model):
     orderid = models.IntegerField(db_column='orderID', primary_key=True)  # Field name made lowercase.
     customerid = models.ForeignKey(Customer, on_delete=models.SET_NULL, db_column='customerID', blank=True, null=True)  # Field name made lowercase.
     storeid = models.ForeignKey(Store, on_delete=models.SET_NULL, db_column='storeID', blank=True, null=True)  # Field name made lowercase.
-    orderdate = models.CharField(db_column='orderDate', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    orderdate = models.DateField(db_column='orderDate', blank=True, null=True) 
+    #orderdate = models.CharField(db_column='orderDate', max_length=20, blank=True, null=True)  # Field name made lowercase.
     nitems = models.IntegerField(db_column='nItems', blank=True, null=True)  # Field name made lowercase.
     total = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-
+ 
     class Meta:
         managed = True
         db_table = 'orders'
 
 class OrderItem(models.Model):
-    sku = models.ForeignKey(Product, on_delete=models.SET_NULL, db_column='SKU', blank=True, null=True)  # Field name made lowercase.
-    orderid = models.ForeignKey(Order, on_delete=models.SET_NULL, db_column='orderID', blank=True, null=True)  # Field name made lowercase.
-
+    orderid = models.ForeignKey(Order, db_column='orderID', on_delete=models.CASCADE)
+    sku = models.ForeignKey(Product, db_column='SKU', on_delete=models.CASCADE)
+    
     class Meta:
         managed = True
         db_table = 'orderItems'
+        unique_together = (('orderid', 'sku'),)
+
+#pie chart
+class PieData(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    name = models.CharField(max_length=255)
+    year = models.IntegerField()
+    month = models.IntegerField()
+    revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'PieData'  # Name der bereits existierenden Tabelle
+
+    def __str__(self):
+        return f"{self.name} - {self.year}/{self.month}: {self.revenue}"
+
+#bar chart
+class TotalSalesByMonthBar(models.Model):
+    id = models.BigAutoField(primary_key=True) 
+    year = models.IntegerField()
+    month = models.IntegerField()
+    revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'TotalSalesByMonthBar'
+        verbose_name = 'Total Sales By Month Bar'
+        verbose_name_plural = 'Total Sales By Month Bars'
+
+    def __str__(self):
+        return f'{self.year}-{self.month}: {self.revenue}'
