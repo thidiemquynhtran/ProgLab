@@ -2,6 +2,7 @@
 
 from django.urls import path
 from . import views
+from .views import monthly_sales_progress_view
 
 
 urlpatterns = [
@@ -21,6 +22,8 @@ urlpatterns = [
     path('total-orders/', views.total_orders_view, name='total_orders'),
     path('pie-data/', views.pie_data_view, name='pie_data_list'),
     path('total-sales-Bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
+    path('revenue-by-store/', views.revenue_by_store_in_state_view, name='revenue_by_store'),
+    path('monthly-sales-progress/', monthly_sales_progress_view, name='monthly-sales-progress'),
 
     # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),

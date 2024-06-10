@@ -33,7 +33,7 @@ class Store(models.Model):
     zipcode = models.IntegerField(db_column='zipcode', blank=True, null=True)
     state_abbr = models.CharField(db_column='state_abbr',max_length=2, blank=True, null=True)
     latitude = models.DecimalField(db_column='latitude',max_digits=8, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(db_column='longtitude',max_digits=9, decimal_places=5, blank=True, null=True)
+    longitude = models.DecimalField(db_column='longitude',max_digits=9, decimal_places=5, blank=True, null=True)
     city = models.CharField(db_column='city',max_length=15, blank=True, null=True)
     state = models.CharField(db_column='state',max_length=10, blank=True, null=True)
     distance = models.CharField(db_column='distance',max_length=18, blank=True, null=True)

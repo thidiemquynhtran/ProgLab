@@ -1,8 +1,9 @@
 # dataanylsis/utils.py
 
+import calendar
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Func,  F
 from .models import Customer, Order, Store
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
@@ -270,23 +271,6 @@ def get_customer_locations():
     customers = Customer.objects.values('latitude', 'longitude')
     return list(customers)
 
-def get_line_chart_data():
-    #still not done
-    # Query the database using Django's ORM
-     queryset = Order.objects.all()
-
-     # Extract required data fields and format into the desired JSON structure
-     formatted_results = [
-         {
-             "timestamp": item.orderdate[:10],  # Extract the date part from the datetime field
-             "value": float(item.total)  # Convert total to float for JSON compatibility
-         }
-         for item in queryset
-     ]
-
-     # Return the JSON response
-     return JsonResponse(formatted_results, safe=False)
-
  #Keymetric: Total Number of Shops --> Shops page 
 def calculate_total_shops():
     total_shops = Store.objects.count()
@@ -352,3 +336,59 @@ def get_bar_data():
 
     return bar_data
 
+#Bar Chart : compare Revenue among stores(under maps)
+def get_revenue_by_store_in_state(state=None):
+    # Query to get all stores, optionally filtering by state
+    if state:
+        stores = Store.objects.filter(state=state).values(
+            'storeid', 'zipcode', 'state', 'city', 'latitude', 'longitude'
+        )
+    else:
+        stores = Store.objects.all().values(
+            'storeid', 'zipcode', 'state', 'city', 'latitude', 'longitude'
+        )
+
+    # Convert stores queryset to a dictionary for easier manipulation
+    store_revenues = {store['storeid']: {**store, 'revenue': 0} for store in stores}
+
+    # Query to get all orders, optionally filtering by state
+    if state:
+        orders = Order.objects.filter(storeid__state=state).values('storeid').annotate(total_revenue=Sum('total'))
+    else:
+        orders = Order.objects.all().values('storeid').annotate(total_revenue=Sum('total'))
+
+    # Calculate revenue by store
+    for order in orders:
+        storeid = order['storeid']
+        total_revenue = order['total_revenue']
+        if storeid in store_revenues:
+            store_revenues[storeid]['revenue'] = total_revenue
+
+    return list(store_revenues.values())
+
+
+#Line chart: total sales for the three years 
+def get_monthly_sales_progress():
+    # Cast 'orderdate' to DateTimeField before extracting month and year
+    sales_data = (
+        Order.objects.annotate(
+            orderdate_dt=Cast('orderdate', output_field=DateTimeField())
+        ).annotate(
+            year=ExtractYear('orderdate_dt'),
+            month=ExtractMonth('orderdate_dt')
+        ).values('year', 'month')
+        .annotate(total_sales=Sum('total'))
+        .filter(year__in=[2020, 2021, 2022])
+        .order_by('year', 'month')
+    )
+    
+    result = {'2020': [], '2021': [], '2022': []}
+    for data in sales_data:
+        month_name = calendar.month_name[data['month']]
+        year = str(data['year'])
+        result[year].append({
+            'month': month_name,
+            'total_sales': float(data['total_sales'])
+        })
+    
+    return result

@@ -25,8 +25,13 @@ from .utils import (
     calculate_total_orders,
     PieData, 
     get_bar_data,
-    get_pie_data
+    get_pie_data,
+    get_revenue_by_store_in_state,
+    get_monthly_sales_progress
 )
+    
+
+    
 
 def index_view(request):
     return render(request, 'index.html')
@@ -160,3 +165,17 @@ def total_sales_by_month_bar_list_view(request):
 def pie_data_view(request):
     pie_data = get_pie_data()
     return Response(pie_data)
+
+#Return bar chart compare revenue
+@api_view(['GET'])
+def revenue_by_store_in_state_view(request):
+    state = request.GET.get('state', None)
+    
+    data = get_revenue_by_store_in_state(state)
+    return JsonResponse(data, safe=False)
+
+#Return line chart monthly sales
+@api_view(['GET'])
+def monthly_sales_progress_view(request):
+    data = get_monthly_sales_progress()
+    return Response(data)
