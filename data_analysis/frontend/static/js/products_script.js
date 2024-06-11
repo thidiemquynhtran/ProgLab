@@ -5,7 +5,7 @@ $(document).ready(function () {
 
   function fetchBarChartData(year, callback) {
     $.ajax({
-      url: `/total-sales-by-month?year=${year}`,
+      url: `/total-sales-bar-data?year=${year}`,
       method: "GET",
       dataType: "json",
       success: function (data) {
@@ -19,7 +19,7 @@ $(document).ready(function () {
 
   function fetchPieChartData(year, month, callback) {
     $.ajax({
-      url: `/pizza-category-distribution`,
+      url: `/pie-data`,
       method: "GET",
       data: { year: year, month: month },
       dataType: "json",
@@ -54,7 +54,7 @@ $(document).ready(function () {
   function createBarChart(filteredData, categorySalesData) {
     var months = filteredData.map((item) => item.month);
     var totalSalesData = filteredData.map((item) =>
-      parseFloat(item.total_sales)
+      parseFloat(item.revenue)
     );
 
     var datasets = [
@@ -68,7 +68,7 @@ $(document).ready(function () {
     // Check if categorySalesData is provided and add a dataset for category sales
     if (categorySalesData) {
       var categorySales = categorySalesData.map((item) =>
-        parseFloat(item.Revenue)
+        parseFloat(item.revenue)
       );
       var categoryNames = categorySalesData.map((item) => item.name);
       datasets.push({
@@ -107,11 +107,11 @@ $(document).ready(function () {
 
   function createPieChart(filteredData) {
     var categories = Array.from(new Set(filteredData.map((item) => item.name)));
-    var totalSales = filteredData.reduce((sum, item) => sum + item.Revenue, 0);
+    var totalSales = filteredData.reduce((sum, item) => sum + item.revenue, 0);
     var data = categories.map((category) => {
       var categorySales = filteredData
         .filter((item) => item.name === category)
-        .reduce((sum, item) => sum + item.Revenue, 0);
+        .reduce((sum, item) => sum + item.revenue, 0);
       return (categorySales / totalSales) * 100;
     });
 
