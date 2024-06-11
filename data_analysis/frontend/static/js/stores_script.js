@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize the map
-  //var map = L.map('map').setView([37.7749, -122.4194], 5);
   var map = L.map("map", { preferCanvas: true }).setView(
     [37.7749, -122.4194],
     5,
@@ -12,6 +11,80 @@ document.addEventListener("DOMContentLoaded", function () {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
+
+  // Add GeoJSON layer for state boundaries
+  $.getJSON(
+    "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json",
+    function (data) {
+      L.geoJson(data, {
+        style: function (feature) {
+          return {
+            color: "#000",
+            weight: 1,
+            fillOpacity: 0.2,
+          };
+        },
+        onEachFeature: function (feature, layer) {
+          layer.on({
+            click: function (e) {
+              map.fitBounds(e.target.getBounds());
+              var stateName = feature.properties.name;
+              console.log("Clicked state: ", stateName);
+              fetchStoreDataByState(stateName);
+            },
+          });
+        },
+      }).addTo(map);
+    }
+  );
+
+  // Function to fetch store data by state and generate bar chart
+  function fetchStoreDataByState(state) {
+    $.ajax({
+      url: `http://127.0.0.1:8000/revenue-by-store/?state=${state}`,
+      dataType: "json",
+      success: function (data) {
+        generateBarChart(data);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error(
+          "Error fetching store data by state:",
+          textStatus,
+          errorThrown
+        );
+      },
+    });
+  }
+
+  // Function to generate bar chart
+  function generateBarChart(data) {
+    var ctx = document.getElementById("barChart").getContext("2d");
+    var labels = data.map((store) => store.storeid);
+    var revenues = data.map((store) => parseFloat(store.revenue));
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Revenue",
+            data: revenues,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
 
   // Function to process customer data for heatmap
   function processCustomerData(data) {
