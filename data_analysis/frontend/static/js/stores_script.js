@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
+  // Variable to hold the existing chart instance
+  var existingChart = null;
+
   // Add GeoJSON layer for state boundaries
   $.getJSON(
     "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json",
@@ -59,16 +62,22 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to generate bar chart
   function generateBarChart(data) {
     var ctx = document.getElementById("barChart").getContext("2d");
+
+    // Destroy existing chart instance if it exists
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
     var labels = data.map((store) => store.storeid);
     var revenues = data.map((store) => parseFloat(store.revenue));
 
-    new Chart(ctx, {
+    existingChart = new Chart(ctx, {
       type: "bar",
       data: {
         labels: labels,
         datasets: [
           {
-            label: "Revenue",
+            label: "Sales Revenue",
             data: revenues,
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             borderColor: "rgba(75, 192, 192, 1)",
