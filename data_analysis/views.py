@@ -46,6 +46,10 @@ def stores_view(request):
     context = {} 
     return render(request, 'stores.html', context)
 
+def customers_view(request):
+    context = {} 
+    return render(request, 'customers.html',context)
+
 #Returns total number of customers
 @api_view(['GET'])
 def total_customers_view(request):

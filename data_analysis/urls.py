@@ -33,6 +33,7 @@ urlpatterns = [
     path('data_analysis/index.html', views.index_view, name='index'),
     path('data_analysis/products.html', views.products_view, name='products'),
     path('data_analysis/stores.html', views.stores_view, name='stores'),
+    path('data_analysis/customers.html', views.customers_view, name='customers'),
 
 ]
 
