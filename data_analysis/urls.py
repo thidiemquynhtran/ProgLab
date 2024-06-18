@@ -24,7 +24,7 @@ urlpatterns = [
     path('total-orders/', views.total_orders_view, name='total_orders'),
 
     path('pie-data/', views.pie_data_view, name='pie_data_list'),
-    path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
+     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
 
     
