@@ -27,7 +27,10 @@ from .utils import (
     get_bar_data,
     get_pie_data,
     get_revenue_by_store_in_state,
-    get_monthly_sales_progress
+    get_monthly_sales_progress,
+    #fetch_total_orders_by_month
+    average_order_value_Line,
+    Rpr_Line
 )
     
 
@@ -152,9 +155,9 @@ def total_orders_view(request):
     total_orders = calculate_total_orders()
     return Response({'total_orders': total_orders})
 
-class PieDataListAPIView(generics.ListAPIView):
-    queryset = PieData.objects.all()
-    serializer_class = PieDataSerializer
+#class PieDataListAPIView(generics.ListAPIView):
+    #queryset = PieData.objects.all()
+    #serializer_class = PieDataSerializer
 
 @api_view(['GET'])
 def total_sales_by_month_bar_list_view(request):
@@ -179,3 +182,19 @@ def revenue_by_store_in_state_view(request):
 def monthly_sales_progress_view(request):
     data = get_monthly_sales_progress()
     return Response(data)
+
+#Total Orders Line Chart
+#@api_view(['GET'])
+#def total_orders_view(request):
+    #data = fetch_total_orders_by_month()
+    #return Response(data)
+
+@api_view(['GET'])
+def average_order_value_Line_view(request):
+    data = average_order_value_Line()
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+def rpr_line_chart_api(request, year):
+    rpr_data = Rpr_Line(year)
+    return JsonResponse(rpr_data)

@@ -10,7 +10,7 @@ from django.db.models import Count #für pie
 from datetime import datetime
 from django.db.models.functions import ExtractMonth, ExtractYear, Substr, Cast
 from collections import defaultdict
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 import pandas as pd
 from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
@@ -20,42 +20,108 @@ from .models import PieData, TotalSalesByMonthBar
 
 #key metrics ----------
 
-# alle Kunden
+# Keymetric: alle Kunden
 def calculate_total_customers():
     return Customer.objects.count()
 
-#avarge order von Kunde
+#Keymetric: avarge order von Kunde
 def calculate_average_order_value():
     total_sales = Order.objects.aggregate(total_sales=Sum('total'))['total_sales']
     total_orders = Order.objects.count()
     return total_sales / total_orders if total_orders > 0 else 0
+#chart
+def average_order_value_Line():
+    # Aggregate total sales and order counts by year and month
+    orders_by_month = Order.objects.annotate(
+        year=ExtractYear('orderdate'),
+        month=ExtractMonth('orderdate')
+    ).values('year', 'month').annotate(
+        total_sales=Sum('total'),
+        total_orders=Count('orderid')
+    ).order_by('year', 'month')
+    # Calculate average order value and convert month numbers to month names
+    results = []
+    for order in orders_by_month:
+        total_sales = order['total_sales'] or 0
+        total_orders = order['total_orders'] or 0
+        average_order_value = Decimal(total_sales) / total_orders if total_orders > 0 else Decimal(0)
+        # Round to two decimal places
+        average_order_value = average_order_value.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
+        results.append({
+            'year': order['year'],
+            'month': calendar.month_name[order['month']],
+            'average_order_value': float(average_order_value)
+        })
 
-#repeat purchase rate
+    return results
 
+#Keymetric: repeat purchase rate
 def calculate_repeat_purchase_rate():
     # Anzahl der Kunden mit mehr als einer Bestellung
-    repeat_customers = Order.objects.values('customerID').annotate(num_orders=Count('orderID')).filter(num_orders__gt=1).count()
-    
+    repeat_customers = Order.objects.values('customerid').annotate(num_orders=Count('orderid')).filter(num_orders__gt=1).count()
     # Gesamtanzahl der Kunden
-    total_customers = Order.objects.values('customerID').distinct().count()
-    
+    total_customers = Order.objects.values('customerid').distinct().count()
     # Berechne die Repeat Purchase Rate
     repeat_purchase_rate = (repeat_customers / total_customers) * 100 if total_customers > 0 else 0
-    
     return repeat_purchase_rate
+#chart
+def Rpr_Line(year):
+    # Ein leeres Standarddict zum Speichern der RPR für jeden Monat
+    # Get all unique months from the Orders table
+    months = Order.objects.annotate(month=TruncMonth('orderdate')).values_list('month', flat=True).distinct()
 
-#gesamtumsatz keymetric
+    for month in months:
+        # Get all customers who made a purchase in this month
+        customers_in_month = Order.objects.filter(orderdate__month=month.month, orderdate__year=month.year).values_list('customerid', flat=True).distinct()
+    
+        # Get all customers who made a repeat purchase in this month
+        repeat_customers_in_month = Order.objects.filter(orderdate__month=month.month, orderdate__year=month.year).values_list('customerid', flat=True).annotate(num_orders=Count('customerid')).filter(num_orders__gt=1).distinct()
+    
+        # Calculate the repeat purchase rate for this month
+        repeat_purchase_rate = (len(repeat_customers_in_month) / len(customers_in_month)) * 100
+    
+    print(f'Month: {month}, Repeat Purchase Rate: {repeat_purchase_rate:.2f}%')
+
+#Keymetric: gesamtumsatz keymetric
 def calculate_total_revenue():
     # Gesamtumsatz
     total_revenue = Order.objects.aggregate(total_revenue=Sum('total'))['total_revenue'] or 0
-    
     return total_revenue
+
+ #Keymetric: Total Number of Shops --> Shops page 
+def calculate_total_shops():
+    total_shops = Store.objects.count()
+    return total_shops
+
+ #Keymetric: Total Items Sold --> Products page
+def calculate_total_items_sold():
+     total_items_sold= OrderItem.objects.aggregate(total_items=Sum('quantity'))['total_items'] or 0
+     return total_items_sold
+
+ #Keymetric: Total Number of Orders --> Homepage
+def calculate_total_orders():
+     total_orders = Order.objects.count()
+     return total_orders
+#chart
+def fetch_total_orders_by_month():
+    # Annotate the orders by extracting the year and month from the order_date
+    orders_by_month = Order.objects.annotate(
+        year=ExtractYear('orderdate'),
+        month=ExtractMonth('orderdate')
+    ).values('year', 'month').annotate(
+        total_orders=Count('orderid')
+    ).order_by('year', 'month')
+    # Convert month numbers to month names using the calendar module
+    results = []
+    for order in orders_by_month:
+        order['month'] = calendar.month_name[order['month']]
+        results.append(order)
+    return results
 
 #----------
 
+
 #----------Balkendigramm
-
-
 #sales nach month
 def get_total_sales_by_month_with_filters(year=None):
     # Map month numbers to month names
@@ -270,21 +336,6 @@ def get_total_sales_by_state(state=None):
 def get_customer_locations():
     customers = Customer.objects.values('latitude', 'longitude')
     return list(customers)
-
- #Keymetric: Total Number of Shops --> Shops page 
-def calculate_total_shops():
-    total_shops = Store.objects.count()
-    return total_shops
-
- #Keymetric: Total Items Sold --> Products page
-def calculate_total_items_sold():
-     total_items_sold= OrderItem.objects.aggregate(total_items=Sum('quantity'))['total_items'] or 0
-     return total_items_sold
-
- #Keymetric: Total Number of Orders --> Homepage
-def calculate_total_orders():
-     total_orders = Order.objects.count()
-     return total_orders
 
 # Pie Data
 def get_pie_data():

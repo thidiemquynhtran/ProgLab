@@ -24,8 +24,13 @@ urlpatterns = [
     path('total-sales-Bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
     path('revenue-by-store/', views.revenue_by_store_in_state_view, name='revenue_by_store'),
     path('monthly-sales-progress/', monthly_sales_progress_view, name='monthly-sales-progress'),
+    #path('api/totalOrders/Line', views.total_orders_view, name='totalOrders-Line'),
+    path('api/average_order_value_Line/', views.average_order_value_Line_view, name='average_order_value_Line'),
+    path('rpr/<int:year>/', views.rpr_line_chart_api, name='rpr_line_chart_api'),
 
-    # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
+
+
+   # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
     path('data_analysis/index.html', views.index_view, name='index'),
     path('data_analysis/products.html', views.products_view, name='products'),
     path('data_analysis/stores.html', views.stores_view, name='stores'),
