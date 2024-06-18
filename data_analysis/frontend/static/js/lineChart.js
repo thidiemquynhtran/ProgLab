@@ -4,7 +4,7 @@ $(document).ready(function () {
   function fetchData() {
     // Fetch total customers and average order value
     $.ajax({
-      url: "http://127.0.0.1:8000/total-customers/", // Update with your actual endpoint URL
+      url: "http://127.0.0.1:8000/total-customers/",
       method: "GET",
       success: function (response) {
         $("#totalCustomers").text(response.total_customers);
@@ -17,7 +17,7 @@ $(document).ready(function () {
 
     // Fetch average order value
     $.ajax({
-      url: "http://127.0.0.1:8000/average-order-value/", // Update with your actual endpoint URL
+      url: "http://127.0.0.1:8000/average-order-value/",
       method: "GET",
       success: function (response) {
         $("#averageOrderValue").text(response.average_order_value);
@@ -53,19 +53,6 @@ $(document).ready(function () {
         // Handle error case here
       },
     });
-  }
-  function loadLineChart() {
-    $.ajax({
-      url: "/total-revenue-by-month", // Beispiel-URL für die Daten der Line-Chart
-      method: "GET",
-      dataType: "json",
-      success: function (data) {
-        createLineChart(data);
-      },
-      error: function (error) {
-        console.error("Error fetching line chart data", error);
-      },
-    });
 
     // Fetch repeat purchase rate
     $.ajax({
@@ -81,43 +68,97 @@ $(document).ready(function () {
     });
   }
 
-  function createLineChart(data) {
-    var months = data.map((item) => item.month);
-    var totalRevenueData = data.map((item) => parseFloat(item.total_revenue));
-
-    var ctx = document.getElementById("lineChart").getContext("2d");
-    if (lineChart) {
-      lineChart.destroy();
-    }
-    lineChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: months,
-        datasets: [
-          {
-            label: "Total Revenue",
-            data: totalRevenueData,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderWidth: 1,
-          },
-        ],
+  function loadLineChart() {
+    $.ajax({
+      url: "http://127.0.0.1:8000/monthly-sales-progress/", // Update with your actual endpoint URL
+      method: "GET",
+      dataType: "json",
+      success: function (data) {
+        createLineChart(data);
       },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
+      error: function (error) {
+        console.error("Error fetching line chart data", error);
       },
     });
   }
 
-  // Wenn der Benutzer auf den Link "Customers" in der Navbar klickt, lade die Line-Chart
-  $('a[href="customers.html"]').click(function (e) {
-    e.preventDefault(); // Standardnavigation unterbinden
-    loadLineChart(); // Funktion zum Laden der Line-Chart aufrufen
-  });
+  function createLineChart(data) {
+    var months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
-  fetchData(); // Funktion zum Laden der Daten aufrufen
+    var series = [];
+
+    for (var year in data) {
+      var yearData = data[year];
+      var salesData = new Array(12).fill(0);
+
+      yearData.forEach(function (monthData) {
+        var monthIndex = months.indexOf(monthData.month);
+        if (monthIndex !== -1) {
+          salesData[monthIndex] = monthData.total_sales;
+        }
+      });
+
+      series.push({
+        name: `Total Sales ${year}`,
+        type: "line",
+        data: salesData,
+      });
+    }
+
+    var chartDom = document.getElementById("lineChart");
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+      title: {
+        text: "Monthly Sales Progress",
+      },
+      tooltip: {
+        trigger: "axis",
+      },
+      legend: {
+        data: series.map((s) => s.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: months,
+      },
+      yAxis: {
+        type: "value",
+      },
+      series: series,
+    };
+
+    option && myChart.setOption(option);
+  }
+
+  // Call the loadLineChart function initially to render the line chart when the site is opened
+  loadLineChart();
+
+  fetchData(); // Fetch other data
 });

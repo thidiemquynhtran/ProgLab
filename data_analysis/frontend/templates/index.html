@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script src="{% static 'js/lineChart.js' %}"></script>
 </head>
   <body>
@@ -106,7 +107,8 @@
 <!-- Restlicher bestehender Inhalt -->
 <div class="row">
 <div class="col-md-12">
-<canvas id="lineChart"></canvas>
+<!--canvas id="lineChart"></!canvas-->
+<div id="lineChart" style="width: 100%; height: 400px;"></div>
 </div>
 </div>
     </main>
