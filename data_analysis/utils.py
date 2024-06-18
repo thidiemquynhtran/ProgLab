@@ -3,7 +3,7 @@
 import calendar
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
-from django.db.models import Count, Sum, Func,  F
+from django.db.models import Count, Sum, Func, F, Q, Subquery
 from .models import Customer, Order, Store
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
@@ -16,7 +16,7 @@ from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
 from django.http import JsonResponse
 from datetime import datetime
-from .models import PieData, TotalSalesByMonthBar 
+from .models import PieData, TotalSalesByMonthBar, YearTcRcRpr
 
 #key metrics ----------
 
@@ -282,6 +282,48 @@ def get_pizza_category_distribution(orders_df, items_df, products_df, year=None,
     return result_dict
 
 
+#neu: für Interaktivität/Funktion zur Aggregation der monatlichen Verkäufe nach Kategorie
+def get_monthly_sales_by_category(orders_df, items_df, products_df, year=None, category=None):
+    # Join orders_df und items_df
+    order_items_df = pd.merge(orders_df, items_df, on='orderid')
+
+    # Füge die Preise aus products_df hinzu
+    order_items_df = pd.merge(order_items_df, products_df[['sku', 'price']], on='sku', how='left')
+
+    # Füge die Spalte "name" aus products_df hinzu
+    order_items_df = pd.merge(order_items_df, products_df[['sku', 'name']], on='sku', how='left')
+
+    # Berechne den Umsatz pro Produkt
+    order_items_df['Revenue'] = order_items_df['nitems'] * order_items_df['price']
+
+    # Extrahiere Jahr und Monat, unter Beachtung gemischter Datumsformate
+    order_items_df['orderdate'] = pd.to_datetime(order_items_df['orderdate'], errors='coerce')
+
+    # Entferne Zeilen mit ungültigen Datumswerten
+    order_items_df = order_items_df.dropna(subset=['orderdate'])
+
+    # Extrahiere Jahr und Monat
+    order_items_df['year'] = order_items_df['orderdate'].dt.year
+    order_items_df['month'] = order_items_df['orderdate'].dt.month_name()
+
+    # Filter nach Jahr und Monat, falls angegeben
+    if year:
+        order_items_df = order_items_df[order_items_df['year'] == int(year)]
+    
+    # Filter by category if specified
+    if category:
+        order_items_df = order_items_df[order_items_df['name'] == category]
+
+    # Gruppiere nach Jahr, Monat und Pizza-Name und summiere den Umsatz
+    result_df = order_items_df.groupby(['year', 'month', 'name'])['Revenue'].sum().reset_index(name='Revenue')
+
+    # Konvertiere das DataFrame in das gewünschte Format
+    result_dict = result_df.to_dict(orient='records')
+
+    return result_dict
+
+
+
 def get_total_sales_by_state(state=None):
     queryset = Order.objects.all() #order objekte aus DB abrufen
 
@@ -296,112 +338,48 @@ def get_customer_locations():
     return list(customers)
 
 # Pie Data
-def get_pie_data(year=None, month=None):
-    # Build the filter criteria based on the provided parameters
-    filter_criteria = {}
-    if year:
-        filter_criteria['year'] = year
-    if month:
-        month_mapping = {
-            'January': 1,
-            'February': 2,
-            'March': 3,
-            'April': 4,
-            'May': 5,
-            'June': 6,
-            'July': 7,
-            'August': 8,
-            'September': 9,
-            'October': 10,
-            'November': 11,
-            'December': 12,
-        }
-        month_int = month_mapping.get(month)
-        if month_int is not None:
-            filter_criteria['month'] = month_int
+def get_pie_data():
+    pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
 
-    # Filter the data based on the provided criteria
-    if filter_criteria:
-        pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
-    else:
-        pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
-
-    # Convert month to name format
-    month_mapping_reverse = {
-        1: 'January',
-        2: 'February',
-        3: 'March',
+     # Konvertiere den Monat in Namenformat
+    month_mapping = {
+        1: 'Januar',
+        2: 'Februar',
+        3: 'März',
         4: 'April',
-        5: 'May',
-        6: 'June',
-        7: 'July',
+        5: 'Mai',
+        6: 'Juni',
+        7: 'Juli',
         8: 'August',
         9: 'September',
-        10: 'October',
+        10: 'Oktober',
         11: 'November',
-        12: 'December',
+        12: 'Dezember',
     }
 
     for item in pie_data:
-        item['month'] = month_mapping_reverse.get(item['month'], '')
+        item['month'] = month_mapping.get(item['month'], '')
 
     return pie_data
-def get_monthly_sales_by_category(year=None, name=None):
-    # Build the filter criteria based on the provided parameters
-    filter_criteria = {}
-    if year:
-        filter_criteria['year'] = year
-    if name:
-        filter_criteria['name__icontains'] = name
 
-    # Filter the data based on the provided criteria
-    if filter_criteria:
-        pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
-    else:
-        pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
-
-    # Convert month to name format
-    month_mapping_reverse = {
-        1: 'January',
-        2: 'February',
-        3: 'March',
-        4: 'April',
-        5: 'May',
-        6: 'June',
-        7: 'July',
-        8: 'August',
-        9: 'September',
-        10: 'October',
-        11: 'November',
-        12: 'December',
-    }
-
-    for item in pie_data:
-        item['month'] = month_mapping_reverse.get(item['month'], '')
-
-    return pie_data
 # Bar Data
-def get_bar_data(year=None):
-    # Filter the data based on the provided year if it is given
-    if year:
-        bar_data = TotalSalesByMonthBar.objects.filter(year=year).values('year', 'month', 'revenue')
-    else:
-        bar_data = TotalSalesByMonthBar.objects.all().values('year', 'month', 'revenue')
+def get_bar_data():
+    bar_data = TotalSalesByMonthBar.objects.all().values('year', 'month', 'revenue')
 
     # Konvertiere den Monat in Namenformat
     month_mapping = {
-        1: 'January',
-        2: 'February',
-        3: 'March',
+        1: 'Januar',
+        2: 'Februar',
+        3: 'März',
         4: 'April',
-        5: 'May',
-        6: 'June',
-        7: 'July',
+        5: 'Mai',
+        6: 'Juni',
+        7: 'Juli',
         8: 'August',
         9: 'September',
-        10: 'October',
+        10: 'Oktober',
         11: 'November',
-        12: 'December',
+        12: 'Dezember',
     }
 
     for item in bar_data:
@@ -465,3 +443,13 @@ def get_monthly_sales_progress():
         })
     
     return result
+
+    #data zu repeatcustomer, totla customer, rpr
+
+def get_year_tc_rc_rpr_data():
+    try:
+        # Daten aus der Tabelle YearTcRcRpr abrufen
+        year_tc_rc_rpr_data = YearTcRcRpr.objects.all()
+        return year_tc_rc_rpr_data
+    except YearTcRcRpr.DoesNotExist:
+        return None

@@ -1,6 +1,6 @@
 # data_analysis/serializers.py
 from rest_framework import serializers
-from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar
+from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar, YearTcRcRpr
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,4 +35,10 @@ class PieDataSerializer(serializers.ModelSerializer):
 class TotalSalesByMonthBarSerializer(serializers.ModelSerializer):
     class Meta:
         model = TotalSalesByMonthBar
-        exclude = ['id']  # Die id-Spalte ausschließen
+        exclude = ['id']  # Die id-Spalte ausschließe
+
+
+class YearTcRcRprSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = YearTcRcRpr
+        fields = ('year', 'total_customers', 'repeat_customers', 'repeat_purchase_rate')

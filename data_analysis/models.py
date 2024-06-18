@@ -92,3 +92,13 @@ class TotalSalesByMonthBar(models.Model):
 
     def __str__(self):
         return f'{self.year}-{self.month}: {self.revenue}'
+
+    
+class YearTcRcRpr(models.Model):
+    year = models.IntegerField()
+    total_customers = models.IntegerField()
+    repeat_customers = models.IntegerField()
+    repeat_purchase_rate = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'yearTcRcRpr'  # Der Name der Tabelle in der Datenbank

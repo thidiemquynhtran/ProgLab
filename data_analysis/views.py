@@ -2,11 +2,12 @@
 from django.shortcuts import render
 import pandas as pd
 from django.http import JsonResponse
+from rest_framework import status
 from .models import Order, OrderItem, Product
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from .models import PieData, TotalSalesByMonthBar
-from .serializers import PieDataSerializer, TotalSalesByMonthBarSerializer
+from .serializers import PieDataSerializer, TotalSalesByMonthBarSerializer, YearTcRcRprSerializer
 from rest_framework.response import Response
 from .utils import (
     calculate_total_customers,
@@ -30,9 +31,10 @@ from .utils import (
     get_monthly_sales_progress,
     #fetch_total_orders_by_month
     average_order_value_Line,
-    Rpr_Line
+    Rpr_Line,
+    get_year_tc_rc_rpr_data
 )
-    
+   
 
     
 
@@ -228,3 +230,35 @@ def average_order_value_Line_view(request):
 def rpr_line_chart_api(request, year):
     rpr_data = Rpr_Line(year)
     return JsonResponse(rpr_data)
+
+
+def RPR_TC_RPC_view(request):
+    data = RPR_TC_RPC()
+    return JsonResponse(data, safe=False)
+
+def repeat_customers_by_year_view(request):
+    # Daten abrufen
+    repeat_customers_by_year = calculate_repeat_customers_by_year()
+    
+    # Daten in JSON formatieren
+    data = list(repeat_customers_by_year)  # In eine Liste konvertieren, um JsonResponse zu verwenden
+    
+    # JsonResponse zurückgeben
+    return JsonResponse(data, safe=False)
+
+
+def customers_and_repeat_customers_view(request):
+    results = calculate_customers_and_repeat_customers()
+    return JsonResponse({'results': results}, safe=False)
+
+@api_view(['GET'])
+def rpr_line_chart_api(request):
+    if request.method == 'GET':
+        # Daten aus der Utility-Methode abrufen
+        year_tc_rc_rpr_data = get_year_tc_rc_rpr_data()
+        
+        if year_tc_rc_rpr_data is not None:
+            serializer = YearTcRcRprSerializer(year_tc_rc_rpr_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)

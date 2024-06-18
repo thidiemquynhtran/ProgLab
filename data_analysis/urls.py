@@ -7,12 +7,14 @@ from .views import monthly_sales_progress_view
 
 urlpatterns = [
     path('total-customers/', views.total_customers_view, name='total_customers'),
+    path('api/repeat_customers_by_year/', views.repeat_customers_by_year_view, name='repeat_customers_by_year'),
     path('average-order-value/', views.average_order_value_view, name='average_order_value'),
     path('repeat-purchase-rate/', views.repeat_purchase_rate_view, name='repeat_purchase_rate'),
     path('total-revenue/', views.total_revenue_view, name='total_revenue'),
     path('total-sales-by-month/', views.total_sales_by_month_view, name='total_sales_by_month'),
     path('total-sales-by-product/', views.total_sales_by_product_view, name='total_sales_by_product'),
     path('pizza-category-distribution/', views.pizza_category_distribution_view, name='pizza_category_distribution'),
+    path('api/year-tc-rc-rpr/', views.rpr_line_chart_api, name='year_tc_rc_rpr_list'),
     
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
     path('total-sales-by-year/', views.total_sales_by_year_view, name='total_sales_by_year'),
@@ -31,7 +33,8 @@ urlpatterns = [
     #path('api/totalOrders/Line', views.total_orders_view, name='totalOrders-Line'),
     path('api/average_order_value_Line/', views.average_order_value_Line_view, name='average_order_value_Line'),
     path('rpr/<int:year>/', views.rpr_line_chart_api, name='rpr_line_chart_api'),
-
+    path('api/rpr_tc_rcp/', views.RPR_TC_RPC_view, name='RPR_TC_RPC_view'),
+    path('api/customers_and_repeat_customers/', views.customers_and_repeat_customers_view, name='customers_and_repeat_customers'),
 
 
    # URL to app: http://127.0.0.1:8000/data_analysis/index.html (don't delete this)
