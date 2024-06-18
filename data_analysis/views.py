@@ -49,6 +49,10 @@ def stores_view(request):
     context = {} 
     return render(request, 'stores.html', context)
 
+def customers_view(request):
+    context = {} 
+    return render(request, 'customers.html',context)
+
 #Returns total number of customers
 @api_view(['GET'])
 def total_customers_view(request):
@@ -108,18 +112,20 @@ def pizza_category_distribution_view(request):
 
 @api_view(['GET'])
 def monthly_sales_by_category_view(request):
-   # Fetch required data from your database
-    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'nitems'))
-    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
-    products_df = pd.DataFrame(Product.objects.values('sku', 'name', 'price'))
+   # Get the 'year' and 'name' parameters from the query string if they exist
+    year = request.query_params.get('year', None)
+    name = request.query_params.get('name', None)
 
-    # Get the year and category parameters from the request
-    year = request.GET.get('year')
-    category = request.GET.get('category')
+    # If the 'year' parameter is provided, convert it to an integer
+    if year is not None:
+        try:
+            year = int(year)
+        except ValueError:
+            return Response({"error": "Invalid year parameter"}, status=400)
 
-    # Call the function with the retrieved DataFrames as arguments and the optional filters
-    data = get_monthly_sales_by_category(orders_df, items_df, products_df, year=year, category=category)
-    return Response(data)
+    # Fetch the pie data with the optional year and name parameters
+    pie_data = get_monthly_sales_by_category(year=year, name=name)
+    return Response(pie_data)
 
 @api_view(['GET'])
 def total_sales_by_state_view(request):
@@ -161,13 +167,37 @@ def total_orders_view(request):
 
 @api_view(['GET'])
 def total_sales_by_month_bar_list_view(request):
-    bar_data = get_bar_data()
+    # Get the 'year' parameter from the query string if it exists
+    year = request.query_params.get('year', None)
+
+    # If the 'year' parameter is provided, convert it to an integer
+    if year is not None:
+        try:
+            year = int(year)
+        except ValueError:
+            return Response({"error": "Invalid year parameter"}, status=400)
+
+    # Fetch the bar data with the optional year parameter
+    bar_data = get_bar_data(year=year)
     return Response(bar_data)
 
 @api_view(['GET'])
 def pie_data_view(request):
-    pie_data = get_pie_data()
+   # Get the 'year' and 'month' parameters from the query string if they exist
+    year = request.query_params.get('year', None)
+    month = request.query_params.get('month', None)
+
+    # If the 'year' parameter is provided, convert it to an integer
+    if year is not None:
+        try:
+            year = int(year)
+        except ValueError:
+            return Response({"error": "Invalid year parameter"}, status=400)
+
+    # Fetch the pie data with the optional year and month parameters
+    pie_data = get_pie_data(year=year, month=month)
     return Response(pie_data)
+
 
 #Return bar chart compare revenue
 @api_view(['GET'])

@@ -5,7 +5,7 @@ $(document).ready(function () {
 
   function fetchBarChartData(year, callback) {
     $.ajax({
-      url: `/total-sales-by-month?year=${year}`,
+      url: `/total-sales-bar-data?year=${year}`,
       method: "GET",
       dataType: "json",
       success: function (data) {
@@ -19,7 +19,7 @@ $(document).ready(function () {
 
   function fetchPieChartData(year, month, callback) {
     $.ajax({
-      url: `/pizza-category-distribution`,
+      url: `/pie-data`,
       method: "GET",
       data: { year: year, month: month },
       dataType: "json",
@@ -53,9 +53,7 @@ $(document).ready(function () {
   }
   function createBarChart(filteredData, categorySalesData) {
     var months = filteredData.map((item) => item.month);
-    var totalSalesData = filteredData.map((item) =>
-      parseFloat(item.total_sales)
-    );
+    var totalSalesData = filteredData.map((item) => parseFloat(item.revenue));
 
     var datasets = [
       {
@@ -68,7 +66,7 @@ $(document).ready(function () {
     // Check if categorySalesData is provided and add a dataset for category sales
     if (categorySalesData) {
       var categorySales = categorySalesData.map((item) =>
-        parseFloat(item.Revenue)
+        parseFloat(item.revenue)
       );
       var categoryNames = categorySalesData.map((item) => item.name);
       datasets.push({
@@ -105,14 +103,18 @@ $(document).ready(function () {
     });
   }
 
-  function createPieChart(filteredData) {
+  function createPieChart(filteredData, title) {
     var categories = Array.from(new Set(filteredData.map((item) => item.name)));
-    var totalSales = filteredData.reduce((sum, item) => sum + item.Revenue, 0);
+    var totalSales = filteredData.reduce((sum, item) => sum + item.revenue, 0);
     var data = categories.map((category) => {
       var categorySales = filteredData
         .filter((item) => item.name === category)
-        .reduce((sum, item) => sum + item.Revenue, 0);
-      return (categorySales / totalSales) * 100;
+        .reduce((sum, item) => sum + item.revenue, 0);
+      //return (categorySales / totalSales) * 100;
+      return {
+        value: ((categorySales / totalSales) * 100).toFixed(2),
+        name: category,
+      };
     });
 
     // Calculate the total Revenue (in numbers not percentage) for each category
@@ -123,46 +125,69 @@ $(document).ready(function () {
     //   return categorySales;
     // });
 
-    var ctx = document.getElementById("pieChart").getContext("2d");
-    if (pieChart) {
-      pieChart.destroy();
-    }
-    pieChart = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: categories,
-        datasets: [
+     var chartDom = document.getElementById("pieChart");
+     var myChart = echarts.init(chartDom);
+      var option = {
+        title: {
+          text: title,
+          left: "center",
+          top: 20,
+        },
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b} : {c} ({d}%)",
+        },
+        legend: {
+          orient: "horizontal",
+          left: "left",
+          bottom: 0,
+          data: categories,
+        },
+        series: [
           {
+            name: "Sales",
+            type: "pie",
+            radius: "50%",
             data: data,
-            backgroundColor: categories.map(() => getRandomColor()),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)",
+              },
+            },
+            label: {
+              show: true,
+              formatter: "{b}\n{d}%",
+              position: "outside",
+              alignTo: "labelLine",
+            },
+            labelLine: {
+              show: true,
+            },
           },
         ],
-      },
-      options: {
-        onClick: function (evt) {
-          console.log("Pie chart clicked");
-          var activePoints = pieChart.getElementsAtEventForMode(
-            evt,
-            "nearest",
-            { intersect: true },
-            false
-          );
-          if (activePoints.length) {
-            selectedCategory = pieChart.data.labels[activePoints[0].index];
-            console.log("Selected category:", selectedCategory);
-            updateBarChart();
-          }
-        },
-      },
+        color: pizzaColors,
+      };
+
+    myChart.setOption(option);
+
+    myChart.on("click", function (params) {
+      console.log("Pie chart clicked");
+      selectedCategory = params.name;
+      console.log("Selected category:", selectedCategory);
+      updateBarChart();
     });
   }
 
   function updatePieChart(month) {
     var year = selectedYear;
+    var title = `Category Distribution for ${year} ${month}`;
     fetchPieChartData(year, month, function (data) {
-      createPieChart(data);
+      createPieChart(data, title);
     });
   }
+
 
   function updateBarChart() {
     console.log("updateBarChart function called");
@@ -191,15 +216,18 @@ $(document).ready(function () {
       });
     }
   }
-
-  function getRandomColor() {
-    var letters = "0123456789ABCDEF";
-    var color = "#";
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
+  
+  const pizzaColors = [
+    "#4E79A7", // Blue
+    "#F28E2B", // Orange
+    "#E15759", // Red
+    "#76B7B2", // Teal
+    "#59A14F", // Green
+    "#EDC948", // Yellow
+    "#B07AA1", // Purple
+    "#FF9DA7", // Pink
+    "#9C755F", // Brown
+  ];
 
   $("#yearFilter").change(function () {
     selectedCategory = null;
@@ -210,7 +238,8 @@ $(document).ready(function () {
     });
 
     fetchPieChartData(selectedYear, null, function (data) {
-      createPieChart(data);
+      var title = `Category Distribution for ${selectedYear}`;
+      createPieChart(data,title);
     });
   });
 
@@ -222,6 +251,7 @@ $(document).ready(function () {
   });
 
   fetchPieChartData(selectedYear, null, function (data) {
-    createPieChart(data);
+     var title = `Category Distribution for ${selectedYear}`;
+     createPieChart(data, title);
   });
 });
