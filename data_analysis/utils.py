@@ -95,13 +95,13 @@ def calculate_total_shops():
 
  #Keymetric: Total Items Sold --> Products page
 def calculate_total_items_sold():
-     total_items_sold= OrderItem.objects.aggregate(total_items=Sum('quantity'))['total_items'] or 0
-     return total_items_sold
+    total_items_sold= OrderItem.objects.aggregate(total_items=Sum('quantity'))['total_items'] or 0
+    return total_items_sold
 
  #Keymetric: Total Number of Orders --> Homepage
 def calculate_total_orders():
-     total_orders = Order.objects.count()
-     return total_orders
+    total_orders = Order.objects.count()
+    return total_orders
 #chart
 def fetch_total_orders_by_month():
     # Annotate the orders by extracting the year and month from the order_date
@@ -343,7 +343,7 @@ def get_pie_data(year=None, month=None):
     }
 
     for item in pie_data:
-         item['month'] = month_mapping_reverse.get(item['month'], '')
+        item['month'] = month_mapping_reverse.get(item['month'], '')
 
         return pie_data
 
@@ -379,8 +379,8 @@ def get_monthly_sales_by_category(year=None, name=None):
 
     for item in pie_data:
         item['month'] = month_mapping_reverse.get(item['month'], '')
-         return pie_data
-
+        return pie_data
+    
 # Bar Data
 def get_bar_data(year=None):
     # Filter the data based on the provided year if it is given
