@@ -510,3 +510,32 @@ def get_customer_growth(year):
         'year': year,
         'data': full_data
     }
+
+#Pie chart to calculate 10% customers , 11-20% and the rest with their revenues
+def get_consistent_revenue_segments(year):
+    # Filter orders by the specified year
+    yearly_orders = Order.objects.filter(orderdate__year=year)
+    
+    # Aggregate number of orders and total revenue per customer
+    customer_data = yearly_orders.values('customerid').annotate(
+        num_orders=Count('orderid'),
+        total_revenue=Sum('total')
+    ).order_by('-num_orders', '-total_revenue')
+
+    # Calculate the total number of customers
+    total_customers = customer_data.count()
+
+    # Determine the revenue for top 10%, top 11-20%, and the rest
+    top_10_cutoff = int(total_customers * 0.1)
+    top_20_cutoff = int(total_customers * 0.2)
+
+    top_10_revenue = sum(item['total_revenue'] for item in customer_data[:top_10_cutoff])
+    next_10_revenue = sum(item['total_revenue'] for item in customer_data[top_10_cutoff:top_20_cutoff])
+    rest_revenue = sum(item['total_revenue'] for item in customer_data[top_20_cutoff:])
+
+    return {
+        'year': year,
+        'top_10_revenue': top_10_revenue,
+        'top_11_20_revenue': next_10_revenue,
+        'rest_revenue': rest_revenue
+    }

@@ -33,7 +33,8 @@ from .utils import (
     average_order_value_Line,
     Rpr_Line,
     get_year_tc_rc_rpr_data,
-    get_customer_growth
+    get_customer_growth,
+    get_consistent_revenue_segments
 )
    
 
@@ -267,4 +268,9 @@ def rpr_line_chart_api(request):
 @api_view(['GET'])
 def customer_growth_view(request, year):
     data = get_customer_growth(year)
-    return JsonResponse(data)        
+    return JsonResponse(data)      
+
+@api_view(['GET'])
+def consistent_revenue_segments_view(request, year):
+    data = get_consistent_revenue_segments(year)
+    return JsonResponse(data)

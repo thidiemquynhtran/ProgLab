@@ -2,7 +2,7 @@
 
 from django.urls import path
 from . import views
-from .views import monthly_sales_progress_view, customer_growth_view
+from .views import monthly_sales_progress_view, customer_growth_view, consistent_revenue_segments_view
 
 
 urlpatterns = [
@@ -43,6 +43,7 @@ urlpatterns = [
     path('data_analysis/stores.html', views.stores_view, name='stores'),
     path('data_analysis/customers.html', views.customers_view, name='customers'),
     path('customer-growth/<int:year>/', customer_growth_view, name='customer_growth'),
+    path('consistent-revenue-segments/<int:year>/', consistent_revenue_segments_view, name='consistent_revenue_segments'),
 ]
 
 
