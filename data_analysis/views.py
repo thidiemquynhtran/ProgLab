@@ -34,7 +34,6 @@ from .utils import (
     Rpr_Line,
     get_year_tc_rc_rpr_data,
     get_customer_growth,
-    get_revenue_segments
 )
    
 
@@ -270,7 +269,3 @@ def customer_growth_view(request, year):
     data = get_customer_growth(year)
     return JsonResponse(data)      
 
-@api_view(['GET'])
-def revenue_segments_view(request, year):
-    data = get_revenue_segments(year)
-    return JsonResponse(data)
