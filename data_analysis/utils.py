@@ -4,7 +4,7 @@ import calendar
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
 from django.db.models import Count, Sum, Func, F, Q, Subquery
-from .models import Customer, Order, Store
+from .models import Customer, MonthlyRPR, Order, RevenueSegment, Store
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 from datetime import datetime
@@ -511,3 +511,27 @@ def get_customer_growth(year):
         'data': full_data
     }
 
+#column chart monthly repeat purchse rate
+def get_monthly_rpr(year):
+    data = MonthlyRPR.objects.filter(year=year).values(
+        'month', 'total_customers', 'repeat_customers', 'repeat_purchase_rate'
+    ).order_by('month')
+    
+    return list(data)
+
+#pie chart top customers
+def get_revenue_segments(year):
+    data = RevenueSegment.objects.filter(year=year).values(
+        'segment', 'segment_revenue'
+    )
+    
+    # Prepare the output format
+    formatted_data = [
+        {
+            'segment': entry['segment'],
+            'segment_revenue': float(entry['segment_revenue'])
+        }
+        for entry in data
+    ]
+
+    return formatted_data

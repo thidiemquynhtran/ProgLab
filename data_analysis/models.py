@@ -102,3 +102,27 @@ class YearTcRcRpr(models.Model):
 
     class Meta:
         db_table = 'yearTcRcRpr'  # Der Name der Tabelle in der Datenbank
+
+
+class MonthlyRPR(models.Model):
+    year = models.IntegerField()
+    month = models.IntegerField()
+    total_customers = models.IntegerField()
+    repeat_customers = models.IntegerField()
+    repeat_purchase_rate = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        db_table = 'monthly_rpr'
+        verbose_name = 'Monthly RPR'
+        verbose_name_plural = 'Monthly RPRs'
+
+
+class RevenueSegment(models.Model):
+    year = models.IntegerField()
+    segment = models.CharField(max_length=10)
+    segment_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'revenue_segments'
+        verbose_name = 'Revenue Segment'
+        verbose_name_plural = 'Revenue Segments'        

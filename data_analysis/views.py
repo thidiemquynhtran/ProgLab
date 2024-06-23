@@ -14,6 +14,8 @@ from .utils import (
     calculate_average_order_value,
     calculate_repeat_purchase_rate,
     calculate_total_revenue,
+    get_monthly_rpr,
+    get_revenue_segments,
     get_total_sales_by_month_with_filters,
     get_total_sales_by_product_with_filters,
     get_pizza_category_distribution,
@@ -267,5 +269,15 @@ def rpr_line_chart_api(request):
 @api_view(['GET'])
 def customer_growth_view(request, year):
     data = get_customer_growth(year)
-    return JsonResponse(data)      
+    return JsonResponse(data)     
+
+@api_view(['GET'])
+def monthly_rpr_view(request, year):
+    data = get_monthly_rpr(year)
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+def revenue_segments_view(request, year):
+    data = get_revenue_segments(year)
+    return JsonResponse(data, safe=False) 
 
