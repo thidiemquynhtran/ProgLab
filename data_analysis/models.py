@@ -95,6 +95,7 @@ class TotalSalesByMonthBar(models.Model):
 
     
 class YearTcRcRpr(models.Model):
+    id = models.BigAutoField(primary_key=True) 
     year = models.IntegerField()
     total_customers = models.IntegerField()
     repeat_customers = models.IntegerField()
