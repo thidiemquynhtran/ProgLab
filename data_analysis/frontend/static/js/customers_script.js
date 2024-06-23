@@ -3,151 +3,174 @@ let barChart;
 let pieChart;
 
 function updateDashboard(year) {
-  const data = {
-    2020: {
-      totalCustomers: 1000,
-      repeatCustomers: 300,
-      repeatPurchaseRate: 30,
-      monthlyData: [100, 150, 130, 140, 180, 170, 160, 150, 140, 130, 120, 110],
-      repeatMonthlyData: [30, 50, 40, 45, 50, 60, 55, 50, 45, 40, 35, 30],
-      quarterlyData: [28, 30, 32, 34],
-      segmentData: [50, 30, 20],
+  $.ajax({
+    url: `/api/year-tc-rc-rpr/`,
+    method: "GET",
+    success: function (data) {
+      const yearData = data.find((item) => item.year === year);
+      if (yearData) {
+        document.getElementById("totalCustomers").innerText =
+          yearData.total_customers;
+        document.getElementById("repeatCustomers").innerText =
+          yearData.repeat_customers;
+        document.getElementById("repeatPurchaseRate").innerText =
+          yearData.repeat_purchase_rate + "%";
+      }
     },
-    2021: {
-      totalCustomers: 1200,
-      repeatCustomers: 400,
-      repeatPurchaseRate: 33,
-      monthlyData: [110, 160, 140, 150, 190, 180, 170, 160, 150, 140, 130, 120],
-      repeatMonthlyData: [33, 55, 45, 50, 55, 65, 60, 55, 50, 45, 40, 33],
-      quarterlyData: [30, 32, 34, 36],
-      segmentData: [55, 35, 10],
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error(
+        "Error fetching total customers and repeat customers:",
+        textStatus,
+        errorThrown
+      );
     },
-    2022: {
-      totalCustomers: 1300,
-      repeatCustomers: 450,
-      repeatPurchaseRate: 34,
-      monthlyData: [120, 170, 150, 160, 200, 190, 180, 170, 160, 150, 140, 130],
-      repeatMonthlyData: [36, 60, 50, 55, 60, 70, 65, 60, 55, 50, 45, 36],
-      quarterlyData: [32, 34, 36, 38],
-      segmentData: [60, 30, 10],
+  });
+
+  $.ajax({
+    url: `/monthly-rpr/${year}/`,
+    method: "GET",
+    success: function (monthlyData) {
+      const months = monthlyData.map((item) => item.month);
+      const totalCustomers = monthlyData.map((item) => item.total_customers);
+      const repeatCustomers = monthlyData.map((item) => item.repeat_customers);
+      const repeatPurchaseRate = monthlyData.map((item) =>
+        parseFloat(item.repeat_purchase_rate)
+      );
+
+      lineChart.setOption({
+        xAxis: { data: months },
+        series: [{ data: totalCustomers }, { data: repeatCustomers }],
+      });
+
+      barChart.setOption({
+        xAxis: { data: months },
+        series: [{ data: repeatPurchaseRate }],
+      });
     },
-  };
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error("Error fetching monthly data:", textStatus, errorThrown);
+    },
+  });
 
-  const selectedData = data[year];
+  $.ajax({
+    url: `/revenue-segments/${year}/`,
+    method: "GET",
+    success: function (segmentData) {
+      const segmentLabels = [
+        "Top 10% Customers",
+        "Top 11-20% Customers",
+        "Others",
+      ];
+      const segmentRevenues = segmentData.map((item) => item.segment_revenue);
+      const totalRevenue = segmentRevenues.reduce((a, b) => a + b, 0);
 
-  document.getElementById("totalCustomers").innerText =
-    selectedData.totalCustomers;
-  document.getElementById("repeatCustomers").innerText =
-    selectedData.repeatCustomers;
-  document.getElementById("repeatPurchaseRate").innerText =
-    selectedData.repeatPurchaseRate + "%";
-
-  lineChart.data.datasets[0].data = selectedData.monthlyData;
-  lineChart.data.datasets[1].data = selectedData.repeatMonthlyData;
-  lineChart.update();
-
-  barChart.data.datasets[0].data = selectedData.quarterlyData;
-  barChart.update();
-
-  pieChart.data.datasets[0].data = selectedData.segmentData;
-  pieChart.update();
+      pieChart.setOption({
+        series: [
+          {
+            data: segmentLabels.map((label, index) => ({
+              value: segmentRevenues[index],
+              name: label,
+              percent: ((segmentRevenues[index] / totalRevenue) * 100).toFixed(
+                2
+              ), // Calculate percentage
+            })),
+          },
+        ],
+      });
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error(
+        "Error fetching revenue segments:",
+        textStatus,
+        errorThrown
+      );
+    },
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const ctxLine = document.getElementById("lineChart").getContext("2d");
-  lineChart = new Chart(ctxLine, {
-    type: "line",
-    data: {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      datasets: [
-        {
-          label: "Total Customers",
-          data: [],
-          fill: true,
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          pointBackgroundColor: "rgba(75, 192, 192, 1)",
-          pointBorderColor: "#fff",
-          pointHoverBackgroundColor: "#fff",
-          pointHoverBorderColor: "rgba(75, 192, 192, 1)",
-        },
-        {
-          label: "Repeat Customers",
-          data: [],
-          fill: true,
-          backgroundColor: "rgba(153, 102, 255, 0.2)",
-          borderColor: "rgba(153, 102, 255, 1)",
-          pointBackgroundColor: "rgba(153, 102, 255, 1)",
-          pointBorderColor: "#fff",
-          pointHoverBackgroundColor: "#fff",
-          pointHoverBorderColor: "rgba(153, 102, 255, 1)",
-        },
-      ],
+  const lineChartDom = document.getElementById("lineChart");
+  const barChartDom = document.getElementById("barChart");
+  const pieChartDom = document.getElementById("pieChart");
+
+  lineChart = echarts.init(lineChartDom);
+  barChart = echarts.init(barChartDom);
+  pieChart = echarts.init(pieChartDom);
+
+  lineChart.setOption({
+    title: { text: "Monthly Data" },
+    tooltip: { trigger: "axis" },
+    legend: { data: ["Total Customers", "Repeat Customers"] },
+    xAxis: {
+      type: "category",
+      data: [], // Initialize with empty data, will be set by AJAX response
     },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 250,
-        },
-      },
-    },
+    yAxis: { type: "value" },
+    series: [
+      { name: "Total Customers", type: "line", data: [], areaStyle: {} },
+      { name: "Repeat Customers", type: "line", data: [], areaStyle: {} },
+    ],
   });
 
-  const ctxBar = document.getElementById("barChart").getContext("2d");
-  barChart = new Chart(ctxBar, {
-    type: "bar",
-    data: {
-      labels: ["Q1", "Q2", "Q3", "Q4"],
-      datasets: [
-        {
-          label: "Repeat Purchase Rate",
-          data: [],
-          backgroundColor: ["#4E73DF", "#4E73DF", "#4E73DF", "#4E73DF"],
-        },
-      ],
+  barChart.setOption({
+    title: { text: "Monthly Repeat Purchase Rate" },
+    tooltip: { trigger: "axis" },
+    xAxis: {
+      type: "category",
+      data: [], // Initialize with empty data, will be set by AJAX response
     },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 40,
-        },
+    yAxis: { type: "value" },
+    series: [
+      {
+        name: "Repeat Purchase Rate",
+        type: "bar",
+        data: [],
+        itemStyle: { color: "#4E73DF" },
       },
-    },
+    ],
   });
 
-  const ctxPie = document.getElementById("pieChart").getContext("2d");
-  pieChart = new Chart(ctxPie, {
-    type: "pie",
-    data: {
-      labels: ["Top 10% Customers", "Top 11-20% Customers", "Others"],
-      datasets: [
-        {
-          data: [],
-          backgroundColor: ["#1cc88a", "#36b9cc", "#e74a3b"],
+  pieChart.setOption({
+    title: { text: "Customer Segments by Sales", left: "center" },
+    tooltip: {
+      trigger: "item",
+      formatter: function (params) {
+        return `${params.name}: ${params.value} $`;
+      },
+    },
+    legend: {
+      orient: "vertical",
+      left: "left",
+      bottom: 0,
+    },
+    series: [
+      {
+        name: "Segments",
+        type: "pie",
+        radius: "50%",
+        data: [
+          { value: 0, name: "Top 10% Customers" },
+          { value: 0, name: "Top 11-20% Customers" },
+          { value: 0, name: "Others" },
+        ],
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
         },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-    },
+        label: {
+          formatter: function (params) {
+            return `${params.name}: ${params.percent}%`;
+          },
+        },
+      },
+    ],
   });
 
   // Initialize with default year data
+  // updateDashboard(new Date().getFullYear());
+  // Initialize with 2020 data
   updateDashboard(2020);
 });

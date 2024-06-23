@@ -14,7 +14,7 @@ urlpatterns = [
     path('total-sales-by-month/', views.total_sales_by_month_view, name='total_sales_by_month'),
     path('total-sales-by-product/', views.total_sales_by_product_view, name='total_sales_by_product'),
     path('pizza-category-distribution/', views.pizza_category_distribution_view, name='pizza_category_distribution'),
-    path('api/year-tc-rc-rpr/', views.rpr_line_chart_api, name='year_tc_rc_rpr_list'),
+    path('year-tc-rc-rpr/', views.rpr_line_chart_api, name='year_tc_rc_rpr_list'),
     
     path('total-sales-by-state/', views.total_sales_by_state_view, name='total_sales_by_state'),
     path('total-sales-by-year/', views.total_sales_by_year_view, name='total_sales_by_year'),
@@ -24,7 +24,7 @@ urlpatterns = [
     path('total-orders/', views.total_orders_view, name='total_orders'),
 
     path('pie-data/', views.pie_data_view, name='pie_data_list'),
-     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
+    path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
 
     

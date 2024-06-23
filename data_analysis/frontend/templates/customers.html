@@ -10,8 +10,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'js/customers_script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="{% static 'js/customers_script.js' %}" defer></script>
+    <style>
+        #lineChart, #barChart, #pieChart {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
 </head>
 <body>
     <header class="bg-dark text-white text-center py-3">
@@ -37,6 +43,7 @@
     
     <div class="container mt-4">
         <div class="text-center mb-4">
+            <p class="mb-2">Choose year to update the dashboard</p>
             <div class="btn-group" role="group" aria-label="Year selector">
                 <button type="button" class="btn btn-outline-primary" onclick="updateDashboard(2020)">2020</button>
                 <button type="button" class="btn btn-outline-primary" onclick="updateDashboard(2021)">2021</button>
@@ -66,19 +73,19 @@
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="line-chart-container">
-                    <canvas id="lineChart"></canvas>
+                    <div id="lineChart"></div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="chart-container">
-                    <canvas id="barChart"></canvas>
+                    <div id="barChart"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="chart-container">
-                    <canvas id="pieChart"></canvas>
+                    <div id="pieChart"></div>
                 </div>
             </div>
         </div>

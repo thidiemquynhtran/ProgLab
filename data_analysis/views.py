@@ -236,7 +236,7 @@ def rpr_line_chart_api(request, year):
 
 
 def RPR_TC_RPC_view(request):
-    data = RPR_TC_RPC()
+    data = get_year_tc_rc_rpr_data()
     return JsonResponse(data, safe=False)
 
 def repeat_customers_by_year_view(request):

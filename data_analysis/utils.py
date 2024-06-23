@@ -344,10 +344,6 @@ def get_pie_data(year=None, month=None):
 
     for item in pie_data:
         item['month'] = month_mapping_reverse.get(item['month'], '')
-
-        return pie_data
-        return pie_data
-
     return pie_data
 
 def get_monthly_sales_by_category(year=None, name=None):
@@ -518,11 +514,28 @@ def get_customer_growth(year):
 
 #column chart monthly repeat purchse rate
 def get_monthly_rpr(year):
+    # Query the database for monthly repeat purchase rate data for the specified year
     data = MonthlyRPR.objects.filter(year=year).values(
         'month', 'total_customers', 'repeat_customers', 'repeat_purchase_rate'
     ).order_by('month')
     
-    return list(data)
+    # Map month numbers to names
+    month_names = ["January", "February", "March", "April", "May", "June", 
+                   "July", "August", "September", "October", "November", "December"]
+    
+    # Convert month numbers to names
+    monthly_rpr_data = []
+    for entry in data:
+        month = month_names[entry['month'] - 1]  # Convert month number to name
+        monthly_rpr_data.append({
+            'month': month,
+            'total_customers': entry['total_customers'],
+            'repeat_customers': entry['repeat_customers'],
+            'repeat_purchase_rate': entry['repeat_purchase_rate']
+        })
+    
+    return monthly_rpr_data
+
 
 #pie chart top customers
 def get_revenue_segments(year):
