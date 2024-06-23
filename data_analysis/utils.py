@@ -476,3 +476,37 @@ def get_year_tc_rc_rpr_data():
         return year_tc_rc_rpr_data
     except YearTcRcRpr.DoesNotExist:
         return None
+
+#Line chart growth of total customers    
+def get_customer_growth(year):
+    # Filter orders by the specified year
+    monthly_orders = Order.objects.filter(orderdate__year=year).annotate(month=TruncMonth('orderdate'))
+    
+    # Count distinct customers per month
+    customer_counts = monthly_orders.values('month').annotate(total_customers=Count('customerid', distinct=True))
+
+    # Map month numbers to names
+    month_names = ["January", "February", "March", "April", "May", "June", 
+                   "July", "August", "September", "October", "November", "December"]
+    
+    # Organize the data by year and month
+    growth_data = []
+    for entry in customer_counts:
+        month = month_names[entry['month'].month - 1]  # Convert month number to name
+        total_customers = entry['total_customers']
+        growth_data.append({
+            'month': month,
+            'total_customers': total_customers
+        })
+
+    # Ensure all months are represented
+    full_data = [{'month': month, 'total_customers': 0} for month in month_names]
+    for data in growth_data:
+        for month_data in full_data:
+            if month_data['month'] == data['month']:
+                month_data['total_customers'] = data['total_customers']
+    
+    return {
+        'year': year,
+        'data': full_data
+    }

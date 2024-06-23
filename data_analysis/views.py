@@ -32,7 +32,8 @@ from .utils import (
     #fetch_total_orders_by_month
     average_order_value_Line,
     Rpr_Line,
-    get_year_tc_rc_rpr_data
+    get_year_tc_rc_rpr_data,
+    get_customer_growth
 )
    
 
@@ -262,3 +263,8 @@ def rpr_line_chart_api(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+@api_view(['GET'])
+def customer_growth_view(request, year):
+    data = get_customer_growth(year)
+    return JsonResponse(data)        
