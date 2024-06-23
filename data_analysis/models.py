@@ -95,14 +95,14 @@ class TotalSalesByMonthBar(models.Model):
 
     
 class YearTcRcRpr(models.Model):
-    id = models.BigAutoField(primary_key=True) 
+    id = models.BigAutoField(primary_key=True)
     year = models.IntegerField()
     total_customers = models.IntegerField()
     repeat_customers = models.IntegerField()
-    repeat_purchase_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    repeat_purchase_rate = models.DecimalField(decimal_places=2, max_digits=10)
 
     class Meta:
-        db_table = 'yearTcRcRpr'  # Der Name der Tabelle in der Datenbank
+        db_table = 'yearTcRcRpr'
 
 
 class MonthlyRPR(models.Model):
