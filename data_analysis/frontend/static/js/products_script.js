@@ -1,7 +1,8 @@
 $(document).ready(function () {
   var barChart, pieChart;
-  var selectedCategory = null;
+  var selectedCategories = [];
   var selectedYear = null;
+  var categoryColors = {}; // Mapping of category names to their colors
 
   function fetchBarChartData(year, callback) {
     $.ajax({
@@ -51,28 +52,35 @@ $(document).ready(function () {
   function getFilteredData(year, callback) {
     fetchBarChartData(year, callback);
   }
+
   function createBarChart(filteredData, categorySalesData) {
     var months = filteredData.map((item) => item.month);
     var totalSalesData = filteredData.map((item) => parseFloat(item.revenue));
 
     var datasets = [
       {
+        type: "line",
         label: "Total Sales",
         data: totalSalesData,
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: false,
       },
     ];
 
-    // Check if categorySalesData is provided and add a dataset for category sales
     if (categorySalesData) {
-      var categorySales = categorySalesData.map((item) =>
-        parseFloat(item.revenue)
-      );
-      var categoryNames = categorySalesData.map((item) => item.name);
-      datasets.push({
-        label: selectedCategory + " Sales",
-        data: categorySales,
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      categorySalesData.forEach((categoryData, index) => {
+        var categorySales = categoryData.map((item) =>
+          parseFloat(item.revenue)
+        );
+        var categoryName = selectedCategories[index];
+        var backgroundColor = categoryColors[categoryName];
+        datasets.push({
+          type: "bar",
+          label: categoryName + " Sales",
+          data: categorySales,
+          backgroundColor: backgroundColor,
+        });
       });
     }
 
@@ -99,6 +107,11 @@ $(document).ready(function () {
             updatePieChart(month);
           }
         },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
       },
     });
   }
@@ -106,76 +119,80 @@ $(document).ready(function () {
   function createPieChart(filteredData, title) {
     var categories = Array.from(new Set(filteredData.map((item) => item.name)));
     var totalSales = filteredData.reduce((sum, item) => sum + item.revenue, 0);
-    var data = categories.map((category) => {
+    var data = categories.map((category, index) => {
       var categorySales = filteredData
         .filter((item) => item.name === category)
         .reduce((sum, item) => sum + item.revenue, 0);
-      //return (categorySales / totalSales) * 100;
+      // Save the color for this category
+      categoryColors[category] = pizzaColors[index % pizzaColors.length];
       return {
         value: ((categorySales / totalSales) * 100).toFixed(2),
         name: category,
+        itemStyle: {
+          color: pizzaColors[index % pizzaColors.length],
+        },
       };
     });
 
-    // Calculate the total Revenue (in numbers not percentage) for each category
-    // var data = categories.map((category) => {
-    //   var categorySales = filteredData
-    //     .filter((item) => item.name === category)
-    //     .reduce((sum, item) => sum + item.Revenue, 0);
-    //   return categorySales;
-    // });
-
-     var chartDom = document.getElementById("pieChart");
-     var myChart = echarts.init(chartDom);
-      var option = {
-        title: {
-          text: title,
-          left: "center",
-          top: 20,
-        },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b} : {c} ({d}%)",
-        },
-        legend: {
-          orient: "horizontal",
-          left: "left",
-          bottom: 0,
-          data: categories,
-        },
-        series: [
-          {
-            name: "Sales",
-            type: "pie",
-            radius: "50%",
-            data: data,
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)",
-              },
-            },
-            label: {
-              show: true,
-              formatter: "{b}\n{d}%",
-              position: "outside",
-              alignTo: "labelLine",
-            },
-            labelLine: {
-              show: true,
+    var chartDom = document.getElementById("pieChart");
+    var myChart = echarts.init(chartDom);
+    var option = {
+      title: {
+        text: title,
+        left: "center",
+        top: 20,
+      },
+      tooltip: {
+        trigger: "item",
+        formatter: "{a} <br/>{b} : {c} ({d}%)",
+      },
+      legend: {
+        orient: "horizontal",
+        left: "left",
+        bottom: 0,
+        data: categories,
+      },
+      series: [
+        {
+          name: "Sales",
+          type: "pie",
+          radius: "50%",
+          data: data,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
             },
           },
-        ],
-        color: pizzaColors,
-      };
+          label: {
+            show: true,
+            formatter: "{b}\n{d}%",
+            position: "outside",
+            alignTo: "labelLine",
+          },
+          labelLine: {
+            show: true,
+          },
+        },
+      ],
+      color: pizzaColors,
+    };
 
     myChart.setOption(option);
 
     myChart.on("click", function (params) {
       console.log("Pie chart clicked");
-      selectedCategory = params.name;
-      console.log("Selected category:", selectedCategory);
+      if (selectedCategories.includes(params.name)) {
+        return;
+      }
+
+      if (selectedCategories.length === 2) {
+        selectedCategories.shift();
+      }
+
+      selectedCategories.push(params.name);
+      console.log("Selected categories:", selectedCategories);
       updateBarChart();
     });
   }
@@ -188,49 +205,52 @@ $(document).ready(function () {
     });
   }
 
-
   function updateBarChart() {
     console.log("updateBarChart function called");
 
     var year = selectedYear;
     console.log("Selected year:", year);
 
-    if (selectedCategory) {
-      console.log("Selected category:", selectedCategory);
-      fetchMonthlySalesByCategory(
-        year,
-        selectedCategory,
-        function (categoryData) {
-          console.log("Monthly sales data for category:", categoryData);
+    if (selectedCategories.length > 0) {
+      var categorySalesData = [];
+      var fetchCategoryData = function (index) {
+        if (index < selectedCategories.length) {
+          fetchMonthlySalesByCategory(
+            year,
+            selectedCategories[index],
+            function (categoryData) {
+              categorySalesData.push(categoryData);
+              fetchCategoryData(index + 1);
+            }
+          );
+        } else {
           fetchBarChartData(year, function (totalData) {
-            console.log("Bar chart data:", totalData);
-            createBarChart(totalData, categoryData); // Pass both total sales data and category sales data to createBarChart
+            createBarChart(totalData, categorySalesData);
           });
         }
-      );
+      };
+      fetchCategoryData(0);
     } else {
-      console.log("No category selected");
       fetchBarChartData(year, function (data) {
-        console.log("Bar chart data:", data);
         createBarChart(data, null);
       });
     }
   }
-  
+
   const pizzaColors = [
-    "#4E79A7", // Blue
-    "#F28E2B", // Orange
-    "#E15759", // Red
-    "#76B7B2", // Teal
-    "#59A14F", // Green
-    "#EDC948", // Yellow
-    "#B07AA1", // Purple
-    "#FF9DA7", // Pink
-    "#9C755F", // Brown
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#FF9DA7",
+    "#9C755F",
   ];
 
   $("#yearFilter").change(function () {
-    selectedCategory = null;
+    selectedCategories = [];
     selectedYear = parseInt($(this).val());
 
     getFilteredData(selectedYear, function (data) {
@@ -239,7 +259,7 @@ $(document).ready(function () {
 
     fetchPieChartData(selectedYear, null, function (data) {
       var title = `Category Distribution for ${selectedYear}`;
-      createPieChart(data,title);
+      createPieChart(data, title);
     });
   });
 
@@ -251,7 +271,7 @@ $(document).ready(function () {
   });
 
   fetchPieChartData(selectedYear, null, function (data) {
-     var title = `Category Distribution for ${selectedYear}`;
-     createPieChart(data, title);
+    var title = `Category Distribution for ${selectedYear}`;
+    createPieChart(data, title);
   });
 });

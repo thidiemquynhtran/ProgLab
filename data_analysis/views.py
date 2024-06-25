@@ -117,9 +117,9 @@ def pizza_category_distribution_view(request):
 
 @api_view(['GET'])
 def monthly_sales_by_category_view(request):
-   # Get the 'year' and 'name' parameters from the query string if they exist
+    # Get the 'year' and 'category' parameters from the query string if they exist
     year = request.query_params.get('year', None)
-    name = request.query_params.get('name', None)
+    category = request.query_params.get('category', None)
 
     # If the 'year' parameter is provided, convert it to an integer
     if year is not None:
@@ -128,9 +128,10 @@ def monthly_sales_by_category_view(request):
         except ValueError:
             return Response({"error": "Invalid year parameter"}, status=400)
 
-    # Fetch the pie data with the optional year and name parameters
-    pie_data = get_monthly_sales_by_category(year=year, name=name)
+    # Fetch the pie data with the optional year and category parameters
+    pie_data = get_monthly_sales_by_category(year=year, name=category)
     return Response(pie_data)
+
 
 @api_view(['GET'])
 def total_sales_by_state_view(request):

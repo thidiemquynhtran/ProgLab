@@ -354,14 +354,15 @@ def get_monthly_sales_by_category(year=None, name=None):
     if name:
         filter_criteria['name'] = name
 
-    # Filter the data based on the provided criteria
-    # if filter_criteria:
-    #     pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
-    # else:
-    #     pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
+    if filter_criteria:
+        pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
+    else:
+        pie_data = PieData.objects.all().values('name', 'year', 'month', 'revenue')
 
-    pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
-    # Convert month to name format
+    # Filter the data based on the provided criteria
+   # pie_data = PieData.objects.filter(**filter_criteria).values('name', 'year', 'month', 'revenue')
+
+    # Convert month number to month name
     month_mapping_reverse = {
         1: 'January',
         2: 'February',
@@ -377,10 +378,12 @@ def get_monthly_sales_by_category(year=None, name=None):
         12: 'December',
     }
 
+    # Update month number to month name
     for item in pie_data:
         item['month'] = month_mapping_reverse.get(item['month'], '')
 
     return pie_data
+
 
 # Bar Data
 def get_bar_data(year=None):
