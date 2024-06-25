@@ -2,8 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize the map
   var map = L.map("map", { preferCanvas: true }).setView(
     [37.7749, -122.4194],
-    5,
-    { width: "100%", height: "600px" }
+    5
   );
 
   // Add a tile layer (OpenStreetMap)
@@ -14,6 +13,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Variable to hold the existing chart instance
   var existingChart = null;
+
+  // Predefined colors for the selected stores
+  var predefinedColors = [
+    "#EDC948",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#B07AA1",
+    "#FF9DA7",
+    "#9C755F",
+
+    // "#FF9304", // Orange
+    // "#C70100", // Red
+    // "#50F2CE", // Teal
+    // "#0DB85C", // Green
+    // "#EDE700", // Yellow
+    // "#4C1796", // Purple
+    // "#FF307F", // Pink
+    // "#C4632B", // Brown
+  ];
+
+  // Default color for unselected stores
+  var defaultColor = "#003F5C";
+
+  // Storeid to color mapping
+  var storeidColors = {};
+  var displayedStores = [];
+  var storeData = [];
+  var markers = {}; // Object to hold markers
+
+  // Function to create custom marker with a shape like a traditional map marker
+  function createCustomIcon(color) {
+    return L.divIcon({
+      html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50% 50% 50% 0; transform: rotate(315deg); border: 2px solid white;"></div>`,
+      className: "custom-marker",
+      iconSize: [30, 42],
+      iconAnchor: [15, 42],
+      popupAnchor: [0, -35],
+    });
+  }
 
   // Add GeoJSON layer for state boundaries
   $.getJSON(
@@ -27,16 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
             fillOpacity: 0.2,
           };
         },
-        onEachFeature: function (feature, layer) {
-          layer.on({
-            click: function (e) {
-              map.fitBounds(e.target.getBounds());
-              var stateName = feature.properties.name;
-              console.log("Clicked state: ", stateName);
-              fetchStoreDataByState(stateName);
-            },
-          });
-        },
       }).addTo(map);
     }
   );
@@ -47,7 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
       url: `http://127.0.0.1:8000/revenue-by-store/?state=${state}`,
       dataType: "json",
       success: function (data) {
-        generateBarChart(data);
+        storeData = data;
+        displayedStores = data.slice(0, 8); // Initially display first 8 stores
+        assignPredefinedColors();
+        generateBarChart(displayedStores);
+        processStoreData(data);
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.error(
@@ -56,6 +90,19 @@ document.addEventListener("DOMContentLoaded", function () {
           errorThrown
         );
       },
+    });
+  }
+
+  // Function to assign predefined colors to the initially displayed stores
+  function assignPredefinedColors() {
+    displayedStores.forEach((store, index) => {
+      storeidColors[store.storeid] = predefinedColors[index];
+    });
+
+    storeData.forEach((store) => {
+      if (!storeidColors[store.storeid]) {
+        storeidColors[store.storeid] = defaultColor;
+      }
     });
   }
 
@@ -79,8 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
           {
             label: "Sales Revenue",
             data: revenues,
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
+            backgroundColor: labels.map((id) => storeidColors[id]),
+            borderColor: labels.map((id) => storeidColors[id]),
             borderWidth: 1,
           },
         ],
@@ -135,6 +182,10 @@ document.addEventListener("DOMContentLoaded", function () {
       url: "http://127.0.0.1:8000/revenue-by-store/", // Replace with your actual backend URL
       dataType: "json",
       success: function (data) {
+        storeData = data;
+        displayedStores = data.slice(0, 8); // Initially display first 8 stores
+        assignPredefinedColors();
+        generateBarChart(displayedStores);
         processStoreData(data);
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -150,14 +201,49 @@ document.addEventListener("DOMContentLoaded", function () {
       var latitude = parseFloat(store.latitude);
       var longitude = parseFloat(store.longitude);
 
-      var marker = L.marker([latitude, longitude]).addTo(map);
+      var customIcon = createCustomIcon(storeidColors[store.storeid]);
+
+      var marker = L.marker([latitude, longitude], { icon: customIcon }).addTo(
+        map
+      );
+
       marker.bindPopup(
         `<b>Store ID:</b> ${store.storeid}<br>
          <b>Zipcode:</b> ${store.zipcode}<br>
          <b>City:</b> ${store.city}<br>
          <b>Revenue:</b> $${parseFloat(store.revenue).toLocaleString()}`
       );
+
+      marker.on("click", function () {
+        // Handle marker click
+        handleMarkerClick(store);
+      });
+
+      markers[store.storeid] = marker;
     });
+  }
+
+  // Function to handle marker click and update bar chart
+  function handleMarkerClick(store) {
+    if (!displayedStores.find((s) => s.storeid === store.storeid)) {
+      // Save the color of the first store in the displayed list
+      var replacedColor = storeidColors[displayedStores[0].storeid];
+
+      // Replace the first store with the clicked store
+      var removedStore = displayedStores.shift();
+      displayedStores.push(store);
+
+      // Update the colors
+      storeidColors[removedStore.storeid] = defaultColor;
+      storeidColors[store.storeid] = replacedColor;
+
+      // Update the bar chart with new store data
+      generateBarChart(displayedStores);
+
+      // Update the markers
+      markers[removedStore.storeid].setIcon(createCustomIcon(defaultColor));
+      markers[store.storeid].setIcon(createCustomIcon(replacedColor));
+    }
   }
 
   // Fetch customer data on page load
