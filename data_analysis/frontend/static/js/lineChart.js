@@ -124,7 +124,7 @@ $(document).ready(function () {
 
     option = {
       title: {
-        text: "Monthly Sales Progress",
+        text: "Monthly Total Sales of All Stores",
       },
       tooltip: {
         trigger: "axis",

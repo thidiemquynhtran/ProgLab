@@ -1,5 +1,4 @@
-let lineChart;
-let barChart;
+let combinedChart;
 let pieChart;
 
 function updateDashboard(year) {
@@ -37,14 +36,29 @@ function updateDashboard(year) {
         parseFloat(item.repeat_purchase_rate)
       );
 
-      lineChart.setOption({
+      combinedChart.setOption({
         xAxis: { data: months },
-        series: [{ data: totalCustomers }, { data: repeatCustomers }],
-      });
-
-      barChart.setOption({
-        xAxis: { data: months },
-        series: [{ data: repeatPurchaseRate }],
+        series: [
+          {
+            name: "Total Customers",
+            type: "bar",
+            stack: "customers",
+            data: totalCustomers,
+          },
+          {
+            name: "Repeat Customers",
+            type: "bar",
+            stack: "customers",
+            data: repeatCustomers,
+          },
+          {
+            name: "Repeat Purchase Rate",
+            type: "line",
+            data: repeatPurchaseRate,
+            yAxisIndex: 1,
+            smooth: true,
+          },
+        ],
       });
     },
     error: function (jqXHR, textStatus, errorThrown) {
@@ -89,43 +103,40 @@ function updateDashboard(year) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const lineChartDom = document.getElementById("lineChart");
-  const barChartDom = document.getElementById("barChart");
+  const combinedChartDom = document.getElementById("combinedChart");
   const pieChartDom = document.getElementById("pieChart");
 
-  lineChart = echarts.init(lineChartDom);
-  barChart = echarts.init(barChartDom);
+  combinedChart = echarts.init(combinedChartDom);
   pieChart = echarts.init(pieChartDom);
 
-  lineChart.setOption({
+  combinedChart.setOption({
     title: { text: "Monthly Data" },
     tooltip: { trigger: "axis" },
-    legend: { data: ["Total Customers", "Repeat Customers"] },
+    legend: {
+      data: ["Total Customers", "Repeat Customers", "Repeat Purchase Rate"],
+    },
     xAxis: {
       type: "category",
       data: [], // Initialize with empty data, will be set by AJAX response
     },
-    yAxis: { type: "value" },
-    series: [
-      { name: "Total Customers", type: "line", data: [], areaStyle: {} },
-      { name: "Repeat Customers", type: "line", data: [], areaStyle: {} },
+    yAxis: [
+      { type: "value", name: "Customers" },
+      {
+        type: "value",
+        name: "Repeat Purchase Rate (%)",
+        position: "right",
+        axisLabel: { formatter: "{value}%" },
+      },
     ],
-  });
-
-  barChart.setOption({
-    title: { text: "Monthly Repeat Purchase Rate" },
-    tooltip: { trigger: "axis" },
-    xAxis: {
-      type: "category",
-      data: [], // Initialize with empty data, will be set by AJAX response
-    },
-    yAxis: { type: "value" },
     series: [
+      { name: "Total Customers", type: "bar", stack: "customers", data: [] },
+      { name: "Repeat Customers", type: "bar", stack: "customers", data: [] },
       {
         name: "Repeat Purchase Rate",
-        type: "bar",
+        type: "line",
         data: [],
-        itemStyle: { color: "#4E73DF" },
+        yAxisIndex: 1,
+        smooth: true,
       },
     ],
   });
