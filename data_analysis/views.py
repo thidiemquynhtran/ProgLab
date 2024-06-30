@@ -3,7 +3,7 @@ from django.shortcuts import render
 import pandas as pd
 from django.http import JsonResponse
 from rest_framework import status
-from .models import Order, OrderItem, Product
+from .models import IngredientUsage, Order, OrderItem, Product
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from .models import PieData, TotalSalesByMonthBar
@@ -14,6 +14,7 @@ from .utils import (
     calculate_average_order_value,
     calculate_repeat_purchase_rate,
     calculate_total_revenue,
+    get_ingredient_usage,
     get_monthly_rpr,
     get_revenue_segments,
     get_total_sales_by_month_with_filters,
@@ -281,4 +282,9 @@ def monthly_rpr_view(request, year):
 def revenue_segments_view(request, year):
     data = get_revenue_segments(year)
     return JsonResponse(data, safe=False) 
+
+@api_view(['GET'])
+def ingredient_usage_view(request):
+    data = get_ingredient_usage()
+    return JsonResponse(data, safe=False)
 

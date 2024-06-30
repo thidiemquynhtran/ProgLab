@@ -126,4 +126,14 @@ class RevenueSegment(models.Model):
     class Meta:
         db_table = 'revenue_segments'
         verbose_name = 'Revenue Segment'
-        verbose_name_plural = 'Revenue Segments'        
+        verbose_name_plural = 'Revenue Segments'   
+
+class IngredientUsage(models.Model):
+    ingredient = models.CharField(max_length=255)
+    usage_count = models.IntegerField()
+    usage_percentage = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        db_table = 'ingredient_usage'
+        verbose_name = 'Ingredient Usage'
+        verbose_name_plural = 'Ingredient Usages'             
