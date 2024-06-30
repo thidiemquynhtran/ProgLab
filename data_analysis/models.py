@@ -137,3 +137,13 @@ class IngredientUsage(models.Model):
         db_table = 'ingredient_usage'
         verbose_name = 'Ingredient Usage'
         verbose_name_plural = 'Ingredient Usages'             
+
+class StoreCategoryRevenue(models.Model):
+    store_id = models.CharField(max_length=7)
+    category = models.CharField(max_length=255)
+    revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'store_category_revenue'
+        verbose_name = 'Store Category Revenue'
+        verbose_name_plural = 'Store Category Revenues'        

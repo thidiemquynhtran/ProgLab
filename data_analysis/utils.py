@@ -4,7 +4,7 @@ import calendar
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
 from django.db.models import Count, Sum, Func, F, Q, Subquery
-from .models import Customer, IngredientUsage, MonthlyRPR, Order, RevenueSegment, Store
+from .models import Customer, IngredientUsage, MonthlyRPR, Order, RevenueSegment, Store, StoreCategoryRevenue
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 from datetime import datetime
@@ -562,5 +562,13 @@ def get_ingredient_usage():
     data = IngredientUsage.objects.values(
         'ingredient', 'usage_count', 'usage_percentage'
     ).order_by('-usage_percentage')
+    
+    return list(data)
+
+#Heatmap StoreCategoryRevenue
+def get_store_category_revenue():
+    data = StoreCategoryRevenue.objects.values(
+        'store_id', 'category', 'revenue'
+    ).order_by('store_id', 'category')
     
     return list(data)

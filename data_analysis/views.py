@@ -17,6 +17,7 @@ from .utils import (
     get_ingredient_usage,
     get_monthly_rpr,
     get_revenue_segments,
+    get_store_category_revenue,
     get_total_sales_by_month_with_filters,
     get_total_sales_by_product_with_filters,
     get_pizza_category_distribution,
@@ -288,3 +289,8 @@ def ingredient_usage_view(request):
     data = get_ingredient_usage()
     return JsonResponse(data, safe=False)
 
+
+@api_view(['GET'])
+def store_category_revenue_view(request):
+    data = get_store_category_revenue()
+    return JsonResponse(data, safe=False)
