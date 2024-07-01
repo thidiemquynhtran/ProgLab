@@ -1,6 +1,6 @@
 # data_analysis/serializers.py
 from rest_framework import serializers
-from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar, YearTcRcRpr
+from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,3 +42,9 @@ class YearTcRcRprSerializer(serializers.ModelSerializer):
     class Meta:
         model = YearTcRcRpr
         fields = ('year', 'total_customers', 'repeat_customers', 'repeat_purchase_rate')
+
+
+class StoreRevenueItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreRevenueItem
+        fields = ('storeID', 'total_revenue', 'total_items')  

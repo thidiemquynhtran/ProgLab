@@ -16,7 +16,7 @@ from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
 from django.http import JsonResponse
 from datetime import datetime
-from .models import PieData, TotalSalesByMonthBar, YearTcRcRpr
+from .models import PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem
 
 #key metrics ----------
 
@@ -572,3 +572,7 @@ def get_store_category_revenue():
     ).order_by('store_id', 'category')
     
     return list(data)
+
+    #stores scatterplot
+def get_store_revenue_items():
+    return StoreRevenueItem.objects.all()

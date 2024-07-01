@@ -146,4 +146,17 @@ class StoreCategoryRevenue(models.Model):
     class Meta:
         db_table = 'store_category_revenue'
         verbose_name = 'Store Category Revenue'
-        verbose_name_plural = 'Store Category Revenues'        
+        verbose_name_plural = 'Store Category Revenues'   
+
+
+class StoreRevenueItem(models.Model):
+    id = models.AutoField(primary_key=True)
+    storeID = models.CharField(max_length=50)
+    total_revenue = models.DecimalField(max_digits=20, decimal_places=2)
+    total_items = models.IntegerField()
+
+    class Meta:
+        db_table = 'store_revenue_items'  
+        ordering = ['storeID']  
+        verbose_name = 'Store Revenue Item'
+        verbose_name_plural = 'Store Revenue Items'
