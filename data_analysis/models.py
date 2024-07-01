@@ -160,3 +160,33 @@ class StoreRevenueItem(models.Model):
         ordering = ['storeID']  
         verbose_name = 'Store Revenue Item'
         verbose_name_plural = 'Store Revenue Items'
+
+
+class OrderDistance(models.Model):
+    orderID = models.CharField(max_length=50)
+    customerID = models.CharField(max_length=50)
+    storeID = models.CharField(max_length=50)
+    orderDate = models.DateField()
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    customer_lat = models.DecimalField(max_digits=10, decimal_places=7)
+    customer_lon = models.DecimalField(max_digits=10, decimal_places=7)
+    store_lat = models.DecimalField(max_digits=10, decimal_places=7)
+    store_lon = models.DecimalField(max_digits=10, decimal_places=7)
+    distance = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'order_distances'
+        ordering = ['orderID']
+        verbose_name = 'Order Distance'
+        verbose_name_plural = 'Order Distances'
+
+class OrderDistanceAggregate(models.Model):
+    distance_rounded = models.IntegerField()
+    order_count = models.IntegerField()
+    avg_order_value = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'order_distance_aggregates'
+        ordering = ['distance_rounded']
+        verbose_name = 'Order Distance Aggregate'
+        verbose_name_plural = 'Order Distance Aggregates'

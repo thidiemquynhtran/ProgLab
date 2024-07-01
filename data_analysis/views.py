@@ -7,7 +7,7 @@ from .models import IngredientUsage, Order, OrderItem, Product
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from .models import PieData, TotalSalesByMonthBar
-from .serializers import PieDataSerializer, TotalSalesByMonthBarSerializer, YearTcRcRprSerializer, StoreRevenueItemSerializer
+from .serializers import PieDataSerializer, TotalSalesByMonthBarSerializer, YearTcRcRprSerializer, StoreRevenueItemSerializer, OrderDistanceSerializer, OrderDistanceAggregateSerializer
 from rest_framework.response import Response
 from .utils import (
     calculate_total_customers,
@@ -38,7 +38,10 @@ from .utils import (
     Rpr_Line,
     get_year_tc_rc_rpr_data,
     get_customer_growth,
-    get_store_revenue_items
+    get_store_revenue_items,
+    get_order_distances, 
+    get_order_distance_aggregates
+
 
 )   
 
@@ -301,4 +304,16 @@ def store_category_revenue_view(request):
 def store_revenue_items_view(request):
     items = get_store_revenue_items()
     serializer = StoreRevenueItemSerializer(items, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def order_distances_view(request):
+    items = get_order_distances()
+    serializer = OrderDistanceSerializer(items, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def order_distance_aggregates_view(request):
+    items = get_order_distance_aggregates()
+    serializer = OrderDistanceAggregateSerializer(items, many=True)
     return Response(serializer.data)

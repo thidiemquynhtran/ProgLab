@@ -27,6 +27,7 @@ urlpatterns = [
     path('monthly-sales-by-category/', views.monthly_sales_by_category_view, name='monthly_sales_by_category'),
     path('total-sales-bar-data/', views.total_sales_by_month_bar_list_view, name='total_sales_list'),
     path('store_revenue_items/', views.store_revenue_items_view, name='store_revenue_items'), #scatterplot stores
+    path('order_distance_aggregates/', views.order_distance_aggregates_view, name='order_distance_aggregates'), #order distance
    
     path('revenue-by-store/', views.revenue_by_store_in_state_view, name='revenue_by_store'),
     path('monthly-sales-progress/', monthly_sales_progress_view, name='monthly-sales-progress'),
