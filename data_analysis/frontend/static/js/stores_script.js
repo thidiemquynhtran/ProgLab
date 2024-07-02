@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
-  // Variable to hold the existing chart instance
+  // Variables to hold the existing chart and heatmap instances
   var existingChart = null;
+  var heatmapChart = null;
 
   // Predefined colors for the selected stores
   var predefinedColors = [
@@ -24,15 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "#B07AA1",
     "#FF9DA7",
     "#9C755F",
-
-    // "#FF9304", // Orange
-    // "#C70100", // Red
-    // "#50F2CE", // Teal
-    // "#0DB85C", // Green
-    // "#EDE700", // Yellow
-    // "#4C1796", // Purple
-    // "#FF307F", // Pink
-    // "#C4632B", // Brown
   ];
 
   // Default color for unselected stores
@@ -70,28 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }).addTo(map);
     }
   );
-
-  // Function to fetch store data by state and generate bar chart
-  function fetchStoreDataByState(state) {
-    $.ajax({
-      url: `http://127.0.0.1:8000/revenue-by-store/?state=${state}`,
-      dataType: "json",
-      success: function (data) {
-        storeData = data;
-        displayedStores = data.slice(0, 8); // Initially display first 8 stores
-        assignPredefinedColors();
-        generateBarChart(displayedStores);
-        processStoreData(data);
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error(
-          "Error fetching store data by state:",
-          textStatus,
-          errorThrown
-        );
-      },
-    });
-  }
 
   // Function to assign predefined colors to the initially displayed stores
   function assignPredefinedColors() {
@@ -138,8 +108,138 @@ document.addEventListener("DOMContentLoaded", function () {
             beginAtZero: true,
           },
         },
+        plugins: {
+          legend: {
+            display: false, // Remove legend
+          },
+        },
       },
     });
+  }
+
+  // Function to generate heatmap
+  function generateHeatmap(data) {
+    if (heatmapChart) {
+      heatmapChart.dispose();
+    }
+
+    heatmapChart = echarts.init(document.getElementById("heatmap"));
+
+    var stores = displayedStores.map((store) => store.storeid);
+    var categories = Array.from(new Set(data.map((item) => item.category)));
+    var heatmapData = [];
+
+    categories.forEach((category, i) => {
+      stores.forEach((store, j) => {
+        var item = data.find(
+          (d) => d.store_id === store && d.category === category
+        );
+        heatmapData.push([j, i, item ? parseFloat(item.revenue) : 0]);
+      });
+    });
+
+    var option = {
+      title: {
+        text: "Heatmap of Revenue by Category and Store",
+        left: "center",
+      },
+      tooltip: {
+        position: "top",
+        formatter: function (params) {
+          return `${categories[params.value[1]]}<br>${
+            stores[params.value[0]]
+          }<br>Revenue: $${params.value[2].toFixed(2)}`;
+        },
+      },
+      grid: {
+        left: "10%",
+        right: "10%",
+        bottom: "10%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: stores,
+        splitArea: {
+          show: true,
+        },
+      },
+      yAxis: {
+        type: "category",
+        data: categories,
+        splitArea: {
+          show: true,
+        },
+      },
+      visualMap: {
+        min: 0,
+        max: 1000000, // Adjust based on actual data range
+        calculable: true,
+        orient: "horizontal",
+        left: "center",
+        bottom: "5%",
+        inRange: {
+          color: ["#e0ffff", "#006edd"],
+        },
+      },
+      series: [
+        {
+          name: "Revenue",
+          type: "heatmap",
+          data: heatmapData,
+          label: {
+            show: true,
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
+      ],
+    };
+
+    heatmapChart.setOption(option);
+  }
+
+  // Function to fetch store-category revenue data
+  function fetchStoreCategoryRevenue() {
+    return $.ajax({
+      url: "http://127.0.0.1:8000/store-category-revenue/", // Replace with your actual backend URL
+      dataType: "json",
+    });
+  }
+
+  // Function to handle marker click and update bar chart and heatmap
+  function handleMarkerClick(store) {
+    if (!displayedStores.find((s) => s.storeid === store.storeid)) {
+      // Save the color of the first store in the displayed list
+      var replacedColor = storeidColors[displayedStores[0].storeid];
+
+      // Replace the first store with the clicked store
+      var removedStore = displayedStores.shift();
+      displayedStores.push(store);
+
+      // Update the colors
+      storeidColors[removedStore.storeid] = defaultColor;
+      storeidColors[store.storeid] = replacedColor;
+
+      // Update the bar chart with new store data
+      generateBarChart(displayedStores);
+
+      // Update the markers
+      markers[removedStore.storeid].setIcon(createCustomIcon(defaultColor));
+      markers[store.storeid].setIcon(createCustomIcon(replacedColor));
+
+      // Fetch store-category revenue data and update heatmap
+      fetchStoreCategoryRevenue().then((data) => {
+        var relevantData = data.filter((d) =>
+          displayedStores.find((s) => s.storeid === d.store_id)
+        );
+        generateHeatmap(relevantData);
+      });
+    }
   }
 
   // Function to process customer data for heatmap
@@ -187,6 +287,12 @@ document.addEventListener("DOMContentLoaded", function () {
         assignPredefinedColors();
         generateBarChart(displayedStores);
         processStoreData(data);
+        fetchStoreCategoryRevenue().then((data) => {
+          var relevantData = data.filter((d) =>
+            displayedStores.find((s) => s.storeid === d.store_id)
+          );
+          generateHeatmap(relevantData);
+        });
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.error("Error fetching store data:", textStatus, errorThrown);
@@ -221,29 +327,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       markers[store.storeid] = marker;
     });
-  }
-
-  // Function to handle marker click and update bar chart
-  function handleMarkerClick(store) {
-    if (!displayedStores.find((s) => s.storeid === store.storeid)) {
-      // Save the color of the first store in the displayed list
-      var replacedColor = storeidColors[displayedStores[0].storeid];
-
-      // Replace the first store with the clicked store
-      var removedStore = displayedStores.shift();
-      displayedStores.push(store);
-
-      // Update the colors
-      storeidColors[removedStore.storeid] = defaultColor;
-      storeidColors[store.storeid] = replacedColor;
-
-      // Update the bar chart with new store data
-      generateBarChart(displayedStores);
-
-      // Update the markers
-      markers[removedStore.storeid].setIcon(createCustomIcon(defaultColor));
-      markers[store.storeid].setIcon(createCustomIcon(replacedColor));
-    }
   }
 
   // Fetch customer data on page load
