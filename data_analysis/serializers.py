@@ -1,7 +1,6 @@
 # data_analysis/serializers.py
 from rest_framework import serializers
-from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem, OrderDistance, OrderDistanceAggregate
-
+from .models import Customer, Product, Store, Order, OrderItem, PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem, OrderDistance, OrderDistanceAggregate,  ProductSizePopularity
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
@@ -58,3 +57,8 @@ class OrderDistanceAggregateSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDistanceAggregate
         fields = ('distance_rounded', 'order_count', 'avg_order_value') 
+
+class ProductSizePopularitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSizePopularity
+        fields = ('product_size', 'total_sales', 'total_revenue')

@@ -190,3 +190,15 @@ class OrderDistanceAggregate(models.Model):
         ordering = ['distance_rounded']
         verbose_name = 'Order Distance Aggregate'
         verbose_name_plural = 'Order Distance Aggregates'
+
+
+class ProductSizePopularity(models.Model):
+    product_size = models.CharField(max_length=50)
+    total_sales = models.IntegerField()
+    total_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'product_size_popularity'
+        ordering = ['product_size']
+        verbose_name = 'Product Size Popularity'
+        verbose_name_plural = 'Product Size Popularities'

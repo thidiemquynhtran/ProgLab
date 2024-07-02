@@ -16,7 +16,7 @@ from django.shortcuts import render
 from django.db.models import DecimalField, ExpressionWrapper, DateTimeField
 from django.http import JsonResponse
 from datetime import datetime
-from .models import PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem, OrderDistance, OrderDistanceAggregate
+from .models import PieData, TotalSalesByMonthBar, YearTcRcRpr,StoreRevenueItem, OrderDistance, OrderDistanceAggregate, ProductSizePopularity
 
 #key metrics ----------
 
@@ -584,3 +584,6 @@ def get_order_distances():
 #distance tabelle
 def get_order_distance_aggregates():
     return OrderDistanceAggregate.objects.all()
+
+def get_product_size_popularity():
+    return ProductSizePopularity.objects.all()
