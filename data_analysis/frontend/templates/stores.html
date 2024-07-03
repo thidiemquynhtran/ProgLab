@@ -5,19 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PizzaToGo Stores</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'css/styles.css' %}"
-    />
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -26,6 +16,7 @@
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
   <script src="{% static 'js/stores_script.js' %}"></script>
+  <script src="{% static 'js/scatterplot.js' %}"></script>
   <script src="{% static 'js/lineChart.js' %}"></script>
   <style>
     .custom-icon {
@@ -46,46 +37,26 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
     <div class="container">
       <a class="navbar-brand" href="index.html">PizzaToGo</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="products.html">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="stores.html">Stores</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="customers.html">Customers</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="menu.html">Menu</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="stores.html">Stores</a></li>
+          <li class="nav-item"><a class="nav-link" href="customers.html">Customers</a></li>
+          <li class="nav-item"><a class="nav-link" href="menu.html">Menu</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  <main class="container my-4">
-      <div class="row">
-        <div class="col-md-12">
-          <!--canvas id="lineChart"></!canvas-->
-          <div id="lineChart" style="width: 100%; height: 400px;"></div>
-        </div>
+  <main class="container my-4" style="max-width: 95%;">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="lineChart" style="width: 100%; height: 400px;"></div>
       </div>
-    
+    </div>
     <div class="row">
       <div class="col-md-6">
         <h5>Customer and Stores Distribution</h5>
@@ -103,10 +74,17 @@
         <div id="heatmap" style="width: 100%; height: 600px;"></div>
       </div>
     </div>
+     <div class="row mt-4">
+      <div class="col-md-6">
+        <div id="revenue-vs-items-sold" style="width: 100%; height: 400px;"></div>
+      </div>
+      <div class="col-md-6">
+        <div id="order-distance-aggregates" style="width: 100%; height: 400px;"></div>
+      </div>
+    </div>
   </main>
   <footer class="bg-dark text-white text-center py-3">
     <p>&copy; 2024 PizzaToGo</p>
   </footer>
 </body>
 </html>
-
