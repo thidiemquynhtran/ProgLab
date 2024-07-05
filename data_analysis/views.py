@@ -14,8 +14,10 @@ from .utils import (
     calculate_average_order_value,
     calculate_repeat_purchase_rate,
     calculate_total_revenue,
+    get_clv_vs_orders_data,
     get_ingredient_usage,
     get_monthly_rpr,
+    get_price_sensitivity_data,
     get_revenue_segments,
     get_store_category_revenue,
     get_total_sales_by_month_with_filters,
@@ -324,3 +326,13 @@ def product_size_popularity_view(request):
     items = get_product_size_popularity()
     serializer = ProductSizePopularitySerializer(items, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def price_sensitivity_view(request):
+    data = get_price_sensitivity_data()
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+def clv_vs_orders_view(request):
+    data = get_clv_vs_orders_data()
+    return JsonResponse(data, safe=False)

@@ -4,7 +4,7 @@ import calendar
 from django.db.models import Sum, F #für total sales year.p
 from django.db.models.functions import TruncYear, TruncMonth  #für total sales year.p
 from django.db.models import Count, Sum, Func, F, Q, Subquery
-from .models import Customer, IngredientUsage, MonthlyRPR, Order, RevenueSegment, Store, StoreCategoryRevenue
+from .models import ClvVsOrders, Customer, IngredientUsage, MonthlyRPR, Order, PriceSensitivity, RevenueSegment, Store, StoreCategoryRevenue
 from .models import Order, OrderItem #from .models import Order, OrderItem, #für total sales year.p 
 from django.db.models import Count #für pie
 from datetime import datetime
@@ -587,3 +587,15 @@ def get_order_distance_aggregates():
 
 def get_product_size_popularity():
     return ProductSizePopularity.objects.all()
+
+# Fetch price sensitivity data
+def get_price_sensitivity_data():
+    data = PriceSensitivity.objects.all().values('price', 'total_sales')
+    result = list(data)
+    return result
+
+# Fetch CLV vs. number of orders data
+def get_clv_vs_orders_data():
+    data = ClvVsOrders.objects.all().values('customerid', 'total_orders', 'clv')
+    result = list(data)
+    return result

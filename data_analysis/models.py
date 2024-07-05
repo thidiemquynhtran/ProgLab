@@ -202,3 +202,19 @@ class ProductSizePopularity(models.Model):
         ordering = ['product_size']
         verbose_name = 'Product Size Popularity'
         verbose_name_plural = 'Product Size Popularities'
+
+
+class PriceSensitivity(models.Model):
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_sales = models.DecimalField(max_digits=15, decimal_places=2)
+
+    class Meta:
+        db_table = 'price_sensitivity'
+
+class ClvVsOrders(models.Model):
+    customerid = models.CharField(max_length=50)
+    total_orders = models.IntegerField()
+    clv = models.DecimalField(max_digits=15, decimal_places=2)
+
+    class Meta:
+        db_table = 'clv_vs_orders'        
