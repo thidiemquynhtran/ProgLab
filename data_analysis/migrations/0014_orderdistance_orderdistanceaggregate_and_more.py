@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Order Distances',
                 'db_table': 'order_distances',
                 'ordering': ['orderID'],
-                #'managed': False,  # Hinzugefügt
+                'managed': False,  # Hinzugefügt
             },
         ),
         migrations.CreateModel(
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Order Distance Aggregates',
                 'db_table': 'order_distance_aggregates',
                 'ordering': ['distance_rounded'],
-                #'managed': False,  # Hinzugefügt
+                'managed': False,  # Hinzugefügt
             },
         ),
         migrations.CreateModel(
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Product Size Popularities',
                 'db_table': 'product_size_popularity',
                 'ordering': ['product_size'],
-                #'managed': False,  # Hinzugefügt
+                'managed': False,  # Hinzugefügt
             },
         ),
         migrations.CreateModel(
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Store Revenue Items',
                 'db_table': 'store_revenue_items',
                 'ordering': ['storeID'],
-                #'managed': False,  # Hinzugefügt
+                'managed': False,  # Hinzugefügt
             },
         ),
     ]
