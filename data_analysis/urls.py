@@ -32,7 +32,7 @@ urlpatterns = [
    
     path('revenue-by-store/', views.revenue_by_store_in_state_view, name='revenue_by_store'),
     path('monthly-sales-progress/', monthly_sales_progress_view, name='monthly-sales-progress'),
-    #path('api/totalOrders/Line', views.total_orders_view, name='totalOrders-Line'),
+    path('api/totalOrders/Line', views.total_orders_view, name='totalOrders-Line'),
     path('api/average_order_value_Line/', views.average_order_value_Line_view, name='average_order_value_Line'),
     path('rpr/<int:year>/', views.rpr_line_chart_api, name='rpr_line_chart_api'),
     path('api/rpr_tc_rcp/', views.RPR_TC_RPC_view, name='RPR_TC_RPC_view'),

@@ -1,101 +1,261 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>PizzaToGo Dashboard</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-    <script src="{% static 'js/lineChart.js' %}"></script>
 </head>
-  <body>
+<body>
     <header class="bg-dark text-white text-center py-3">
-      <h1>PizzaToGo Dashboard</h1>
+        <h1>PizzaToGo Dashboard</h1>
     </header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">PizzaToGo</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="products.html">Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="stores.html">Stores</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="customers.html">Customers</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="menu.html">Menu</a>
-            </li>
-          </ul>
+        <div class="container">
+            <a class="navbar-brand" href="index.html">PizzaToGo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="stores.html">Stores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customers.html">Customers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="menu.html">Menu</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
     <main class="container my-4">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Average Order Value</h5>
-              <p class="card-text" id="averageOrderValue">0</p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Average Order Value</h5>
+                        <p class="card-text" id="averageOrderValue">0</p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Total Orders</h5>
-              <p class="card-text" id="totalOrders">0</p>
+            <div class="col-md-4">
+                <div class="card text-white bg-info mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Orders</h5>
+                        <p class="card-text" id="totalOrders">0</p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Total Revenue</h5>
-              <p class="card-text" id="totalRevenue">0</p>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Revenue</h5>
+                        <p class="card-text" id="totalRevenue">0</p>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      
-      {% comment %} <div class="row">
-        <div class="col-md-12">
-          <!--canvas id="lineChart"></!canvas-->
-          <div id="lineChart" style="width: 100%; height: 400px;"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="totalOrdersChart" style="width: 100%; height: 400px;"></div>
+            </div>
         </div>
-      </div> {% endcomment %}
+        <div class="row">
+            <div class="col-md-12">
+                <div id="averageOrderValueChart" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
     </main>
     <footer class="bg-dark text-white text-center py-3">
-      <p>&copy; 2024 PizzaToGo</p>
+        <p>&copy; 2024 PizzaToGo</p>
     </footer>
-  </body>
+    <script>
+        $(document).ready(function () {
+            var lineChart;
+
+            function fetchData() {
+                // Fetch total customers
+                $.ajax({
+                    url: "http://127.0.0.1:8000/total-customers/",
+                    method: "GET",
+                    success: function (response) {
+                        $("#totalCustomers").text(response.total_customers);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching total customers data:", error);
+                    },
+                });
+
+                // Fetch average order value
+                $.ajax({
+                    url: "http://127.0.0.1:8000/average-order-value/",
+                    method: "GET",
+                    success: function (response) {
+                        $("#averageOrderValue").text(response.average_order_value);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching average order value data:", error);
+                    },
+                });
+
+                // Fetch total orders
+                $.ajax({
+                    url: "http://127.0.0.1:8000/total-orders/",
+                    method: "GET",
+                    success: function (response) {
+                        $("#totalOrders").text(response.total_orders);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching total orders data:", error);
+                    },
+                });
+
+                // Fetch total revenue
+                $.ajax({
+                    url: "http://127.0.0.1:8000/total-revenue/",
+                    method: "GET",
+                    success: function (response) {
+                        $("#totalRevenue").text(response.total_revenue);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching total revenue data:", error);
+                    },
+                });
+
+                // Fetch repeat purchase rate
+                $.ajax({
+                    url: "http://127.0.0.1:8000/repeat-purchase-rate/",
+                    method: "GET",
+                    success: function (response) {
+                        $("#repeatPurchaseRate").text(response.repeat_purchase_rate);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching repeat purchase rate data:", error);
+                    },
+                });
+            }
+
+            function loadLineChart() {
+                $.ajax({
+                    url: "http://127.0.0.1:8000/total-orders/",
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        createLineChart(data, 'totalOrdersChart', 'Monthly Total Orders', 'total_orders');
+                    },
+                    error: function (error) {
+                        console.error("Error fetching line chart data", error);
+                    },
+                });
+
+                $.ajax({
+                    url: "http://127.0.0.1:8000/api/average_order_value_Line/",
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        createLineChart(data, 'averageOrderValueChart', 'Monthly Average Order Value', 'average_order_value');
+                    },
+                    error: function (error) {
+                        console.error("Error fetching line chart data", error);
+                    },
+                });
+            }
+
+            function createLineChart(data, chartId, chartTitle, dataKey) {
+                var months = [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December",
+                ];
+
+                var series = {};
+                data.forEach(function (item) {
+                    if (!series[item.year]) {
+                        series[item.year] = new Array(12).fill(0);
+                    }
+                    var monthIndex = months.indexOf(item.month);
+                    if (monthIndex !== -1) {
+                        series[item.year][monthIndex] = item[dataKey];
+                    }
+                });
+
+                var seriesData = Object.keys(series).map(function (year) {
+                    return {
+                        name: `${chartTitle} ${year}`,
+                        type: "line",
+                        data: series[year],
+                    };
+                });
+
+                var chartDom = document.getElementById(chartId);
+                var myChart = echarts.init(chartDom);
+                var option;
+
+                option = {
+                    title: {
+                        text: chartTitle,
+                    },
+                    tooltip: {
+                        trigger: "axis",
+                    },
+                    legend: {
+                        data: seriesData.map((s) => s.name),
+                    },
+                    grid: {
+                        left: "3%",
+                        right: "4%",
+                        bottom: "3%",
+                        containLabel: true,
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {},
+                        },
+                    },
+                    xAxis: {
+                        type: "category",
+                        boundaryGap: false,
+                        data: months,
+                    },
+                    yAxis: {
+                        type: "value",
+                        name: chartTitle,
+                    },
+                    series: seriesData,
+                };
+
+                option && myChart.setOption(option);
+            }
+
+            loadLineChart();
+
+            fetchData();
+        });
+    </script>
+</body>
 </html>

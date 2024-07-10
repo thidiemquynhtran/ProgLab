@@ -35,7 +35,7 @@ from .utils import (
     get_pie_data,
     get_revenue_by_store_in_state,
     get_monthly_sales_progress,
-    #fetch_total_orders_by_month
+    fetch_total_orders_by_month,
     average_order_value_Line,
     Rpr_Line,
     get_year_tc_rc_rpr_data,
@@ -229,10 +229,10 @@ def monthly_sales_progress_view(request):
     return Response(data)
 
 #Total Orders Line Chart
-#@api_view(['GET'])
-#def total_orders_view(request):
-    #data = fetch_total_orders_by_month()
-    #return Response(data)
+@api_view(['GET'])
+def total_orders_view(request):
+    data = fetch_total_orders_by_month()
+    return Response(data)
 
 @api_view(['GET'])
 def average_order_value_Line_view(request):

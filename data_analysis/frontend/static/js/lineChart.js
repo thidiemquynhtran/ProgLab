@@ -78,6 +78,7 @@ $(document).ready(function () {
       },
       error: function (error) {
         console.error("Error fetching line chart data", error);
+        loadMockData(); // Load mock data if there's an error
       },
     });
   }
@@ -157,8 +158,97 @@ $(document).ready(function () {
     option && myChart.setOption(option);
   }
 
+  function createMockLineChart(chartId, title, yAxisLabel, seriesData) {
+    var months = [
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    var chartDom = document.getElementById(chartId);
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+      title: {
+        text: title,
+      },
+      tooltip: {
+        trigger: "axis",
+      },
+      legend: {
+        data: seriesData.map((s) => s.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: months,
+      },
+      yAxis: {
+        type: "value",
+        name: yAxisLabel,
+      },
+      series: seriesData,
+    };
+
+    option && myChart.setOption(option);
+  }
+
+  function loadMockData() {
+    var totalOrdersData = [
+      {
+        name: "2022",
+        type: "line",
+        data: [120, 132, 101, 134, 90, 230, 210, 180, 190, 220, 240, 250],
+      },
+      {
+        name: "2023",
+        type: "line",
+        data: [150, 232, 201, 154, 190, 330, 410, 320, 310, 340, 360, 370],
+      },
+      {
+        name: "2024",
+        type: "line",
+        data: [170, 282, 251, 234, 290, 430, 510, 420, 410, 440, 460, 470],
+      },
+    ];
+
+    var averageOrderValueData = [
+      {
+        name: "2022",
+        type: "line",
+        data: [30, 32, 31, 34, 30, 33, 32, 31, 33, 34, 35, 36],
+      },
+      {
+        name: "2023",
+        type: "line",
+        data: [33, 35, 34, 36, 35, 38, 39, 37, 38, 40, 41, 42],
+      },
+      {
+        name: "2024",
+        type: "line",
+        data: [36, 38, 37, 40, 39, 41, 42, 40, 41, 43, 44, 45],
+      },
+    ];
+
+    createMockLineChart("totalOrdersChart", "Total Orders", "Orders", totalOrdersData);
+    createMockLineChart("averageOrderValueChart", "Average Order Value", "Order Value", averageOrderValueData);
+  }
+
   // Call the loadLineChart function initially to render the line chart when the site is opened
   loadLineChart();
 
   fetchData(); // Fetch other data
+
+  loadMockData(); // Load mock data for other charts
 });
