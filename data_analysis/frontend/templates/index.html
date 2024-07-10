@@ -81,6 +81,11 @@
                 <div id="averageOrderValueChart" style="width: 100%; height: 400px;"></div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="clvOrdersChart" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
     </main>
     <footer class="bg-dark text-white text-center py-3">
         <p>&copy; 2024 PizzaToGo</p>
@@ -175,6 +180,19 @@
                         console.error("Error fetching line chart data", error);
                     },
                 });
+
+                // Fetch CLV vs. Orders data
+                $.ajax({
+                    url: "http://127.0.0.1:8000/clv-vs-orders/",
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        updateCLVOrdersChart(data);
+                    },
+                    error: function (error) {
+                        console.error("Error fetching CLV vs. Orders data", error);
+                    },
+                });
             }
 
             function createLineChart(data, chartId, chartTitle, dataKey) {
@@ -247,6 +265,73 @@
                         name: chartTitle,
                     },
                     series: seriesData,
+                };
+
+                option && myChart.setOption(option);
+            }
+
+            function updateCLVOrdersChart(data) {
+                var clvOrdersData = {
+                    clv: [],
+                    orders: []
+                };
+
+                // Extract CLV and Orders data
+                data.forEach(function (item) {
+                    clvOrdersData.clv.push(parseFloat(item.clv));
+                    clvOrdersData.orders.push(item.total_orders);
+                });
+
+                var chartDom = document.getElementById('clvOrdersChart');
+                var myChart = echarts.init(chartDom);
+                var option;
+
+                option = {
+                    title: {
+                        text: 'Customer Lifetime Value (CLV) vs. Orders',
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                    },
+                    legend: {
+                        data: ['Customer Lifetime Value (CLV)', 'Orders'],
+                    },
+                    xAxis: {
+                        type: 'value',
+                        name: 'Customer Lifetime Value (CLV)',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#675bba'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} $'
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: 'Orders',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#9ccc65'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'Customer Lifetime Value (CLV)',
+                            type: 'line',
+                            data: clvOrdersData.clv,
+                        },
+                        {
+                            name: 'Orders',
+                            type: 'bar',
+                            data: clvOrdersData.orders,
+                        }
+                    ]
                 };
 
                 option && myChart.setOption(option);
