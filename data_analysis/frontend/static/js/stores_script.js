@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
       grid: {
         left: "10%",
         right: "10%",
-        bottom: "10%",
+        bottom: "18%",
         containLabel: true,
       },
       xAxis: {
