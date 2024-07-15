@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var item = data.find(
           (d) => d.store_id === store && d.category === category
         );
-        heatmapData.push([j, i, item ? parseFloat(item.revenue) : 0]);
+        heatmapData.push([j, i, item ? Math.round(parseFloat(item.revenue)) : 0]);
       });
     });
 
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formatter: function (params) {
           return `${categories[params.value[1]]}<br>${
             stores[params.value[0]]
-          }<br>Revenue: $${params.value[2].toFixed(2)}`;
+          }<br>Revenue: $${params.value[2].toFixed(0)}`;
         },
       },
       grid: {
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
           type: "heatmap",
           data: heatmapData,
           label: {
-            show: false,
+            show: true,
           },
           emphasis: {
             itemStyle: {
