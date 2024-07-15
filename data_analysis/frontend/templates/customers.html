@@ -12,8 +12,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script src="{% static 'js/customers_script.js' %}" defer></script>
+    <script src="{% static 'js/customers2_script.js' %}" defer></script>
     <style>
-        #combinedChart, #pieChart {
+        #combinedChart, #pieChart, #clv-vs-orders, #price-sensitivity-chart {
             width: 100%;
             height: 400px;
         }
@@ -78,9 +79,21 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
                 <div class="chart-container">
                     <div id="pieChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="chart-container">
+                    <div id="clv-vs-orders"></div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="chart-container">
+                    <div id="price-sensitivity-chart"></div>
                 </div>
             </div>
         </div>
