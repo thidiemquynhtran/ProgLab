@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script src="{% static 'js/products_script.js' %}"></script>
+    <script src="{% static 'js/products2.js' %}"></script>
     <style>
         #pieChart {
             width: 100%;
@@ -23,9 +24,13 @@
             width: 100%;
             height: 400px;
         }
-        #ingredientUsageChart {
+        #ingredientUsageChartContainer {
             width: 100%;
             height: 600px;
+        }
+        #ingredientUsageChart {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -83,7 +88,7 @@
             <h2>Ingredient Usage</h2>
             <hr>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-12" id="ingredientUsageChartContainer">
             <canvas id="ingredientUsageChart"></canvas>
         </div>
     </div>
