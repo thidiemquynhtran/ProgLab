@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   var scatterChart = null;
   var orderDistanceChart = null;
+  var lineChart = null;
 
   function generateScatterPlot(data) {
     if (scatterChart) {
@@ -93,10 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           type: "category",
           data: distances,
-          name: "Distance (miles)",
-          // axisLabel: {
-          //   rotate: 45, // Rotate labels if necessary
-          // },
+          name: "Distance (km)",
         },
       ],
       yAxis: [
@@ -135,6 +133,178 @@ document.addEventListener("DOMContentLoaded", function () {
     orderDistanceChart.setOption(option);
   }
 
+  function loadLineChart() {
+    $.ajax({
+      url: "http://127.0.0.1:8000/monthly-sales-progress/", // Update with your actual endpoint URL
+      method: "GET",
+      dataType: "json",
+      success: function (data) {
+        createLineChart(data);
+      },
+      error: function (error) {
+        console.error("Error fetching line chart data", error);
+        loadMockData(); // Load mock data if there's an error
+      },
+    });
+  }
+
+  function createLineChart(data) {
+    if (lineChart) {
+      lineChart.dispose();
+    }
+
+    var months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    var series = [];
+
+    for (var year in data) {
+      var yearData = data[year];
+      var salesData = new Array(12).fill(0);
+
+      yearData.forEach(function (monthData) {
+        var monthIndex = months.indexOf(monthData.month);
+        if (monthIndex !== -1) {
+          salesData[monthIndex] = monthData.total_sales;
+        }
+      });
+
+      series.push({
+        name: `Total Sales ${year}`,
+        type: "line",
+        data: salesData,
+      });
+    }
+
+    var chartDom = document.getElementById("lineChart");
+    lineChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+      title: {
+        text: "Monthly Total Sales of All Stores",
+      },
+      tooltip: {
+        trigger: "axis",
+      },
+      legend: {
+        data: series.map((s) => s.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: months,
+      },
+      yAxis: {
+        type: "value",
+      },
+      series: series,
+    };
+
+    option && lineChart.setOption(option);
+  }
+
+  function loadMockData() {
+    var totalOrdersData = [
+      {
+        name: "2022",
+        type: "line",
+        data: [120, 132, 101, 134, 90, 230, 210, 180, 190, 220, 240, 250],
+      },
+      {
+        name: "2023",
+        type: "line",
+        data: [150, 232, 201, 154, 190, 330, 410, 320, 310, 340, 360, 370],
+      },
+      {
+        name: "2024",
+        type: "line",
+        data: [170, 282, 251, 234, 290, 430, 510, 420, 410, 440, 460, 470],
+      },
+    ];
+
+    createMockLineChart("lineChart", "Total Orders", "Orders", totalOrdersData);
+  }
+
+  function createMockLineChart(chartId, title, yAxisLabel, seriesData) {
+    var months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    var chartDom = document.getElementById(chartId);
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+      title: {
+        text: title,
+      },
+      tooltip: {
+        trigger: "axis",
+      },
+      legend: {
+        data: seriesData.map((s) => s.name),
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: months,
+      },
+      yAxis: {
+        type: "value",
+        name: yAxisLabel,
+      },
+      series: seriesData,
+    };
+
+    option && myChart.setOption(option);
+  }
+
   function fetchStoreRevenueItems() {
     $.ajax({
       url: "http://127.0.0.1:8000/store_revenue_items/",
@@ -161,6 +331,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Initial data fetch calls
   fetchStoreRevenueItems();
   fetchOrderDistanceAggregates();
+  loadLineChart(); // Load the line chart
 });

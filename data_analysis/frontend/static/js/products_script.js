@@ -149,7 +149,7 @@ $(document).ready(function () {
       legend: {
         orient: "horizontal",
         left: "left",
-        bottom: 0,
+        bottom: "15%",
         data: categories,
       },
       series: [
@@ -157,6 +157,7 @@ $(document).ready(function () {
           name: "Sales",
           type: "pie",
           radius: "50%",
+          center: ["50%", "40%"],
           data: data,
           emphasis: {
             itemStyle: {

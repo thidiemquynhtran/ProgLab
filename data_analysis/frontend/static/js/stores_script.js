@@ -172,8 +172,8 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       },
       visualMap: {
-        min: 0,
-        max: 1000000, // Adjust based on actual data range
+        min: 17319.21,
+        max: 1122040.42, // Adjust based on actual data range
         calculable: true,
         orient: "horizontal",
         left: "center",
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
           type: "heatmap",
           data: heatmapData,
           label: {
-            show: true,
+            show: false,
           },
           emphasis: {
             itemStyle: {

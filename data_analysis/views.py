@@ -230,7 +230,7 @@ def monthly_sales_progress_view(request):
 
 #Total Orders Line Chart
 @api_view(['GET'])
-def total_orders_view(request):
+def total_orders_by_month_view(request):
     data = fetch_total_orders_by_month()
     return Response(data)
 

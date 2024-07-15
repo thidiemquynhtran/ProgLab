@@ -39,6 +39,10 @@ $(document).ready(function () {
         xAxis: {
           type: "category",
           data: ingredients,
+          axisLabel: {
+            interval: 0, 
+            rotate: 45, 
+          },
         },
         yAxis: {
           type: "value",
@@ -109,6 +113,10 @@ $(document).ready(function () {
         xAxis: {
           type: "category",
           data: sizes,
+          axisLabel: {
+            interval: 0, 
+            rotate: 45, 
+          },
         },
         yAxis: [
           {

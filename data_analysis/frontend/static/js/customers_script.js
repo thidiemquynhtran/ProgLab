@@ -72,7 +72,7 @@ function updateDashboard(year) {
     success: function (segmentData) {
       const segmentLabels = [
         "Top 10% Customers",
-        "Top 11-20% Customers",
+        "More than 10% to 20% Customers",
         "Others",
       ];
       const segmentRevenues = segmentData.map((item) => item.segment_revenue);
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     legend: {
       orient: "vertical",
-      left: "left",
+      //left: "left",
       bottom: 0,
     },
     series: [

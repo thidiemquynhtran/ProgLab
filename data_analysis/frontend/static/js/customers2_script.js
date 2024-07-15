@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
       tooltip: {
         trigger: "axis",
       },
+      grid: {
+        left: "16%",
+        right: "22%",
+        bottom: "15%",
+      },
       xAxis: {
         type: "value",
         name: "Number of Orders",
@@ -76,6 +81,11 @@ document.addEventListener("DOMContentLoaded", function () {
         axisPointer: {
           type: "cross",
         },
+      },
+      grid: {
+        left: "13%",
+        right: "22%",
+        bottom: "15%",
       },
       xAxis: {
         type: "value",
