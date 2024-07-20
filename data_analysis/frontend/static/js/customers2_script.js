@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
           parseFloat(item.price),
           parseFloat(item.total_sales),
         ]);
-        console.log("Processed Data for Price Sensitivity:", processedData); // Debugging line
+        console.log("Processed Data for Price Sensitivity:", processedData); 
         renderPriceSensitivityChart(processedData);
       })
       .catch((error) => console.error("Error fetching data:", error));

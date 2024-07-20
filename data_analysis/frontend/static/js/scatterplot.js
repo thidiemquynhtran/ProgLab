@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadLineChart() {
     $.ajax({
-      url: "http://127.0.0.1:8000/monthly-sales-progress/", // Update with your actual endpoint URL
+      url: "http://127.0.0.1:8000/monthly-sales-progress/", 
       method: "GET",
       dataType: "json",
       success: function (data) {

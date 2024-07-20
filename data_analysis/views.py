@@ -20,13 +20,13 @@ from .utils import (
     get_price_sensitivity_data,
     get_revenue_segments,
     get_store_category_revenue,
-    get_total_sales_by_month_with_filters,
-    get_total_sales_by_product_with_filters,
-    get_pizza_category_distribution,
+    #get_total_sales_by_month_with_filters,
+    #get_total_sales_by_product_with_filters,
+    #get_pizza_category_distribution,
     get_customer_locations,
     get_monthly_sales_by_category,
     get_total_sales_by_state,
-    get_total_sales_by_year_with_filters,
+    #get_total_sales_by_year_with_filters,
     calculate_total_shops,
     calculate_total_items_sold,
     calculate_total_orders,
@@ -91,38 +91,7 @@ def total_revenue_view(request):
     total_revenue = calculate_total_revenue()
     return Response({'total_revenue': total_revenue})
 
-#Returns total sales by month, optional year filter
-@api_view(['GET'])
-def total_sales_by_month_view(request):
-    year = request.GET.get('year', None)
-    sales_data = get_total_sales_by_month_with_filters(year=year)
-    return JsonResponse(sales_data, safe=False)
 
-@api_view(['GET'])
-def total_sales_by_product_view(request):
-    # Holen Sie sich die erforderlichen Daten aus Ihrer Datenbank
-    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate','total'))
-    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
-    products_df = pd.DataFrame(Product.objects.values('sku', 'name','price'))
-
-    # Aufruf der Funktion mit den abgerufenen DataFrames als Argumente
-    data = get_total_sales_by_product_with_filters(orders_df, items_df, products_df)
-    return Response(data)
-
-@api_view(['GET'])
-def pizza_category_distribution_view(request):
-    # Holen Sie sich die erforderlichen Daten aus Ihrer Datenbank
-    orders_df = pd.DataFrame(Order.objects.values('orderid', 'orderdate', 'nitems'))
-    items_df = pd.DataFrame(OrderItem.objects.values('orderid', 'sku'))
-    products_df = pd.DataFrame(Product.objects.values('sku', 'name', 'price'))
-
-    # Holen Sie die Jahr- und Monatsparameter aus der Anfrage
-    year = request.GET.get('year')
-    month = request.GET.get('month')
-
-    # Aufruf der Funktion mit den abgerufenen DataFrames als Argumente und den optionalen Filtern
-    data = get_pizza_category_distribution(orders_df, items_df, products_df, year=year, month=month)
-    return Response(data)
 
 @api_view(['GET'])
 def monthly_sales_by_category_view(request):
@@ -146,11 +115,6 @@ def monthly_sales_by_category_view(request):
 def total_sales_by_state_view(request):
     state = request.query_params.get('state')
     data = get_total_sales_by_state(state)
-    return Response(data)
-
-@api_view(['GET'])
-def total_sales_by_year_view(request):
-    data = get_total_sales_by_year_with_filters()
     return Response(data)
 
 @api_view(['GET'])

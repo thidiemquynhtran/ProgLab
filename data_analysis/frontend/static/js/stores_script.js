@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to fetch store-category revenue data
   function fetchStoreCategoryRevenue() {
     return $.ajax({
-      url: "http://127.0.0.1:8000/store-category-revenue/", // Replace with your actual backend URL
+      url: "http://127.0.0.1:8000/store-category-revenue/", 
       dataType: "json",
     });
   }
@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to fetch customer data from backend
   function fetchCustomerData() {
     $.ajax({
-      url: "/customer-locations/", // Replace with your actual backend URL
+      url: "/customer-locations/", 
       dataType: "json",
       success: function (data) {
         var customerHeatArray = processCustomerData(data);
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to fetch store data from backend
   function fetchStoreData() {
     $.ajax({
-      url: "http://127.0.0.1:8000/revenue-by-store/", // Replace with your actual backend URL
+      url: "http://127.0.0.1:8000/revenue-by-store/", 
       dataType: "json",
       success: function (data) {
         storeData = data;
