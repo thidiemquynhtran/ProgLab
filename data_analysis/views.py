@@ -1,4 +1,3 @@
-# data_analysis/views.py
 from django.shortcuts import render
 import pandas as pd
 from django.http import JsonResponse
@@ -20,13 +19,9 @@ from .utils import (
     get_price_sensitivity_data,
     get_revenue_segments,
     get_store_category_revenue,
-    #get_total_sales_by_month_with_filters,
-    #get_total_sales_by_product_with_filters,
-    #get_pizza_category_distribution,
     get_customer_locations,
     get_monthly_sales_by_category,
     get_total_sales_by_state,
-    #get_total_sales_by_year_with_filters,
     calculate_total_shops,
     calculate_total_items_sold,
     calculate_total_orders,
@@ -44,11 +39,7 @@ from .utils import (
     get_order_distances, 
     get_order_distance_aggregates,
     get_product_size_popularity
-
-
 )   
-
-    
 
 def index_view(request):
     return render(request, 'index.html')
@@ -212,21 +203,6 @@ def rpr_line_chart_api(request, year):
 def RPR_TC_RPC_view(request):
     data = get_year_tc_rc_rpr_data()
     return JsonResponse(data, safe=False)
-
-def repeat_customers_by_year_view(request):
-    # Daten abrufen
-    repeat_customers_by_year = calculate_repeat_customers_by_year()
-    
-    # Daten in JSON formatieren
-    data = list(repeat_customers_by_year)  # In eine Liste konvertieren, um JsonResponse zu verwenden
-    
-    # JsonResponse zurückgeben
-    return JsonResponse(data, safe=False)
-
-
-def customers_and_repeat_customers_view(request):
-    results = calculate_customers_and_repeat_customers()
-    return JsonResponse({'results': results}, safe=False)
 
 @api_view(['GET'])
 def rpr_line_chart_api(request):
